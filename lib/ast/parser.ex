@@ -6,6 +6,7 @@ defmodule QueryParser.AST.Parser do
   alias QueryParser.AST.{
     And,
     ArrayValue,
+    BooleanValue,
     Contains,
     DataKey,
     Eq,
@@ -85,6 +86,10 @@ defmodule QueryParser.AST.Parser do
 
   defp parse_expr(value, _ctx) when is_number(value) do
     %NumberValue{value: value}
+  end
+
+  defp parse_expr(value, _ctx) when is_boolean(value) do
+    %BooleanValue{value: value}
   end
 
   # Simplification of an "$and" function with only one clause
