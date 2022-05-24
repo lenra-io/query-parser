@@ -28,77 +28,44 @@ defmodule QueryParser.ATS.EctoParserTest do
     # DatastoreServices.create(env_id, %{"name" => "todos"}) |> Repo.transaction()
     %{id: datastore_todos_id} = Repo.insert!(Datastore.new(env_id, %{name: "todos"}))
 
-    # # 1
-    # {:ok, %{inserted_data: %{id: user_data_id}}} =
-    #   DataServices.create(env_id, %{"_datastore" => "_users", "score" => 42})
-    #   |> Repo.transaction()
+    # DatastoreServices.create(env_id, %{"name" => "todos"}) |> Repo.transaction()
+    %{id: datastore_validation_id} = Repo.insert!(Datastore.new(env_id, %{name: "validation"}))
 
+    # 1
     {:ok, %{id: user_data_id}} = Repo.insert(Data.new(datastore_users_id, %{"score" => 42}))
-
-    # UserDataServices.create(%{user_id: user_id, data_id: user_data_id}) |> Repo.transaction()
     Repo.insert(UserData.new(%{user_id: user_id, data_id: user_data_id}))
 
-    # # 2
-    # {:ok, %{inserted_data: %{id: todolist1_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todoList",
-    #     "name" => "favorites",
-    #     "_refBy" => [user_data_id]
-    #   })
-    #   |> Repo.transaction()
+    # 2
     {:ok, %{id: todolist1_id}} =
-      Repo.insert(Data.new(datastore_todo_list_id, %{"name" => "favorites"}))
+      Repo.insert(Data.new(datastore_todoList_id, %{"name" => "favorites"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todolist1_id, ref_by_id: user_data_id}))
 
-    # # 3
-    # {:ok, %{inserted_data: %{id: todolist2_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todoList",
-    #     "name" => "not fav",
-    #     "_refBy" => [user_data_id]
-    #   })
-    #   |> Repo.transaction()
+    # 3
     {:ok, %{id: todolist2_id}} =
-      Repo.insert(Data.new(datastore_todo_list_id, %{"name" => "not fav"}))
+      Repo.insert(Data.new(datastore_todoList_id, %{"name" => "not fav"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todolist2_id, ref_by_id: user_data_id}))
 
-    # # 4
-    # {:ok, %{inserted_data: %{id: todo1_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todos",
-    #     "title" => "Faire la vaisselle",
-    #     "_refBy" => [todolist1_id]
-    #   })
-    #   |> Repo.transaction()
+    Repo.insert(DataReferences.new(%{refs_id: todolist2_id, ref_by_id: user_data_id}))
+
+    # 4
     {:ok, %{id: todo1_id}} =
       Repo.insert(Data.new(datastore_todos_id, %{"title" => "Faire la vaisselle"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todo1_id, ref_by_id: todolist1_id}))
 
-    # # 5
-    # {:ok, %{inserted_data: %{id: todo2_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todos",
-    #     "title" => "Faire la cuisine",
-    #     "_refBy" => [todolist1_id]
-    #   })
-    #   |> Repo.transaction()
+    Repo.insert(DataReferences.new(%{refs_id: todo1_id, ref_by_id: todolist1_id}))
+
+    # 5
     {:ok, %{id: todo2_id}} =
       Repo.insert(Data.new(datastore_todos_id, %{"title" => "Faire la cuisine"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todo2_id, ref_by_id: todolist1_id}))
 
-    # # 6
-    # {:ok, %{inserted_data: %{id: todo3_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todos",
-    #     "title" => "Faire le ménage",
-    #     "nullField" => nil,
-    #     "_refBy" => [todolist2_id]
-    #   })
-    #   |> Repo.transaction()
+    Repo.insert(DataReferences.new(%{refs_id: todo2_id, ref_by_id: todolist1_id}))
+
+    # 6
     {:ok, %{id: todo3_id}} =
       Repo.insert(
         Data.new(datastore_todos_id, %{"title" => "Faire le ménage", "nullField" => nil})
@@ -107,19 +74,19 @@ defmodule QueryParser.ATS.EctoParserTest do
     Repo.insert(DataReferences.new(%{refs_id: todo3_id, ref_by_id: todolist2_id}))
 
     # 7
-    # {:ok, %{inserted_data: %{id: todo4_id}}} =
-    #   DataServices.create(env_id, %{
-    #     "_datastore" => "todos",
-    #     "title" => ["Faire le ménage"],
-    #     "nullField" => nil,
-    #     "_refBy" => [todolist2_id]
-    #   })
-    #   |> Repo.transaction()
     {:ok, %{id: todo4_id}} =
       Repo.insert(
         Data.new(datastore_todos_id, %{"title" => ["Faire le ménage"], "nullField" => nil})
       )
 
+    Repo.insert(DataReferences.new(%{refs_id: todo4_id, ref_by_id: todolist2_id}))
+
+    # 8
+    {:ok, %{id: todo5_id}} = Repo.insert(Data.new(datastore_validation_id, %{"valid" => true}))
+    Repo.insert(DataReferences.new(%{refs_id: todo4_id, ref_by_id: todolist2_id}))
+
+    # 9
+    {:ok, %{id: todo6_id}} = Repo.insert(Data.new(datastore_validation_id, %{"valid" => false}))
     Repo.insert(DataReferences.new(%{refs_id: todo4_id, ref_by_id: todolist2_id}))
 
     {:ok,
@@ -132,7 +99,9 @@ defmodule QueryParser.ATS.EctoParserTest do
        todo1_id: todo1_id,
        todo2_id: todo2_id,
        todo3_id: todo3_id,
-       todo4_id: todo4_id
+       todo4_id: todo4_id,
+       todo5_id: todo5_id,
+       todo6_id: todo6_id
      }}
   end
 
@@ -144,6 +113,8 @@ defmodule QueryParser.ATS.EctoParserTest do
     todo2_id: todo2_id,
     todo3_id: todo3_id,
     todo4_id: todo4_id,
+    todo5_id: todo5_id,
+    todo6_id: todo6_id,
     env_id: env_id
   } do
     res =
@@ -152,7 +123,7 @@ defmodule QueryParser.ATS.EctoParserTest do
       |> EctoParser.to_ecto(env_id, user_data_id)
       |> Repo.all()
 
-    assert Enum.count(res) == 7
+    assert Enum.count(res) == 9
 
     assert res
            |> Enum.map(fn e -> e["_id"] end)
@@ -164,7 +135,9 @@ defmodule QueryParser.ATS.EctoParserTest do
                todo1_id,
                todo2_id,
                todo3_id,
-               todo4_id
+               todo4_id,
+               todo5_id,
+               todo6_id
              ])
   end
 
@@ -390,12 +363,12 @@ defmodule QueryParser.ATS.EctoParserTest do
           "_datastore" => "todos",
           "$or" => [
             %{
-              "title" => "Faire le ménage",
-            }, %{
+              "title" => "Faire le ménage"
+            },
+            %{
               "title" => "Faire la cuisine"
             }
           ]
-
         }
       }
       |> Parser.from_json()
@@ -407,6 +380,59 @@ defmodule QueryParser.ATS.EctoParserTest do
     [todo2, todo3] = res
     assert todo2["_id"] == todo2_id
     assert todo3["_id"] == todo3_id
+  end
 
+  test "Select with boolean value", %{
+    user_data_id: user_data_id,
+    env_id: env_id,
+    todo5_id: todo5_id,
+    todo6_id: todo6_id
+  } do
+    res_true =
+      %{
+        "$find" => %{
+          "$and" => [
+            %{
+              "_datastore" => "validation"
+            },
+            %{
+              "valid" => %{
+                "$eq" => true
+              }
+            }
+          ]
+        }
+      }
+      |> Parser.from_json()
+      |> EctoParser.to_ecto(env_id, user_data_id)
+      |> Repo.all()
+
+    res_false =
+      %{
+        "$find" => %{
+          "$and" => [
+            %{
+              "_datastore" => "validation"
+            },
+            %{
+              "valid" => %{
+                "$eq" => false
+              }
+            }
+          ]
+        }
+      }
+      |> Parser.from_json()
+      |> EctoParser.to_ecto(env_id, user_data_id)
+      |> Repo.all()
+
+    [todo_true | _res] = res_true
+    [todo_false | _res] = res_false
+    # Get Todo4
+    assert length(res_true) == 1
+    assert length(res_false) == 1
+
+    assert todo_true["_id"] == todo5_id
+    assert todo_false["_id"] == todo6_id
   end
 end
