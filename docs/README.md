@@ -7,9 +7,9 @@ FIND_FUNCTION: { $find: MATCH_BODY }
 DATASTORE_FILTER: { "_datastore": DATASTORE_NAME }
 DATASTORE_NAME: ^[a-zA-Z][a-zA-Z_0-9-]*$
 
-MATCH_BODY: { MATCH_PROPERTY+ }
+MATCH_BODY: { MATCH_PROPERTY* }
 MATCH_PROPERTY: BOOLEAN_MATCHING_FUNCTION | PROPERTY_CHECK
-PROPERTY_CHECK: { PROPERTY_KEY: MATCH_BODY}
+PROPERTY_CHECK: { PROPERTY_KEY: MATCH_BODY | NOT_OBJECT_VALUE}
 PROPERTY_KEY: ^[a-zA-Z_][a-zA-Z_0-9-]*$
 
 NOT_OBJECT_VALUE: STRING | NUMBER | BOOLEAN | ARRAY[T]
@@ -29,7 +29,7 @@ BOOLEAN_MATCHING_FUNCTION:
     GT_MATCHING_FUNCTION | 
     NOT_MATCHING_FUNCTION
 
-EQ_MATCHING_FUNCTION: { $eq: VALUE } | NOT_OBJECT_VALUE 
+EQ_MATCHING_FUNCTION: { $eq: VALUE } 
 MATCH_MATCHING_FUNCTION:  { $match: MATCH_BODY }
 AND_MATCHING_FUNCTION: { $and: ARRAY[MATCH_BODY] }
 OR_MATCHING_FUNCTION: { $or:  ARRAY[MATCH_BODY] }
@@ -64,4 +64,19 @@ How to read this ?
 
 ## Examples
 ### Take All data from a specific _datastore
+```JSON
+{
+    "_datastore": "MyDatastore",
+    "$find": {}
+}
+```
+
+### Take All data from a specific _datastore with a specific _id
+```JSON
+{
+    "_datastore": "MyDatastore",
+    "$find": {
+        "_id": 42
+    }
+}
 ```
