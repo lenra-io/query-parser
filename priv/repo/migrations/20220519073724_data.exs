@@ -19,7 +19,11 @@ defmodule QueryParser.Repo.Migrations.Data do
       timestamps()
     end
 
-    create(unique_index(:datastores, [:name, :environment_id], name: :datastores_name_application_id_index))
+    create(
+      unique_index(:datastores, [:name, :environment_id],
+        name: :datastores_name_application_id_index
+      )
+    )
 
     create table(:datas) do
       add(:datastore_id, references(:datastores, on_delete: :delete_all), null: false)
@@ -44,7 +48,11 @@ defmodule QueryParser.Repo.Migrations.Data do
       timestamps()
     end
 
-    create(unique_index(:data_references, [:refs_id, :ref_by_id], name: :data_references_refs_id_ref_by_id))
+    create(
+      unique_index(:data_references, [:refs_id, :ref_by_id],
+        name: :data_references_refs_id_ref_by_id
+      )
+    )
 
     execute("CREATE VIEW data_query_view AS
     SELECT
