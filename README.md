@@ -28,17 +28,17 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <!-- <a href="https://github.com/lenra-io/query-parser">
+  <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-<h3 align="center">Query Parser</h3>
+<h3 align="center">Lenra Query Parser</h3>
 
   <p align="center">
-    This repository provides a parser that can transform JSON query into executable Ecto query.
+    This repository provides an parser that can parse JSON query into an AST tree and parse this tree into Ecto query that can be execute with elixir.
     <br />
     <br />
-    <!-- <a href="https://github.com/lenra-io/query-parser">View Demo</a>
+    <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">View Demo</a>
     · -->
     <a href="https://github.com/lenra-io/query-parser/issues">Report Bug</a>
     ·
@@ -51,10 +51,102 @@
 
 ### Prerequisites
 
-<!-- USAGE EXAMPLES -->
-## Troubleshooting
-
+You need to add this lib into your phoenix app : 
+```bash
+    {:query_parser, git: "https://github.com/lenra-io/query-parser.git", tag: "v1.0.0-beta.X"}
 ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Parser
+
+The parser are in two step: 
+- Parse JSON query into an AST tree
+- Pasre the tree into JSON
+
+The query format can be describe with:
+
+```mermaid
+stateDiagram-v2
+      direction LR
+      [*]-->QUERY
+      QUERY-->FIND_FUNCTION
+      FIND_FUNCTION-->$find
+      $find -->MATCH_BODY
+      $find -->_datastore
+      _datastore --> STRING
+      MATCH_BODY --> BOOLEAN_MATCHING_FUNCTION
+      MATCH_BODY --> PROPERTY_CHECK
+      PROPERTY_CHECK --> STRING
+      STRING --> BOOLEAN_MATCHING_FUNCTION
+      BOOLEAN_MATCHING_FUNCTION_LIST --> MATCH_BODY
+      
+      
+      $match --> MATCH_BODY
+      $eq --> VALUE
+      $and --> BOOLEAN_MATCHING_FUNCTION_LIST
+      $or --> BOOLEAN_MATCHING_FUNCTION_LIST
+      $gt--> NUMBER
+      $lt --> NUMBER
+      $not --> MATCH_BODY      
+      
+      
+      state BOOLEAN_MATCHING_FUNCTION {
+        direction LR
+        MATCH_MATCHING_FUNCTION --> $match
+        EQ_MATCHING_FUNCTION --> VALUE
+        EQ_MATCHING_FUNCTION --> $eq
+        AND_MATCHING_FUNCTION --> $and 
+        OR_MATCHING_FUNCTION --> $or 
+        LT_MATCHING_FUNCTION --> $lt 
+        GT_MATCHING_FUNCTION --> $gt 
+        NOT_MATCHING_FUNCTION --> $not
+      }
+      state VALUE {
+        direction LR
+        STRING
+        BOOLEAN
+        OBJECT
+        ARRAY
+        NUMBER
+      }
+```
+    
+### AST
+
+  The representation of the AST:
+
+```mermaid
+stateDiagram-v2
+      [*]-->Query
+      Query-->Find
+      Query-->Select
+```
+
+### Ecto
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- USAGE EXAMPLES -->
+## Query
+
+  This is some exemples of how to use query function
+
+### And
+
+### Eq
+
+### Contains
+
+### In
+
+### Or
+
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -89,13 +181,13 @@ Project Link: [https://github.com/lenra-io/query-parser](https://github.com/lenr
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/query-parser.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [contributors-url]: https://github.com/lenra-io/query-parser/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lenra-io/query-parser.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [forks-url]: https://github.com/lenra-io/query-parser/network/members
-[stars-shield]: https://img.shields.io/github/stars/lenra-io/query-parser.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [stars-url]: https://github.com/lenra-io/query-parser/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lenra-io/query-parser.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [issues-url]: https://github.com/lenra-io/query-parser/issues
-[license-shield]: https://img.shields.io/github/license/lenra-io/query-parser.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [license-url]: https://github.com/lenra-io/query-parser/blob/master/LICENSE.txt
