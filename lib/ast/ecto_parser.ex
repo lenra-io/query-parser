@@ -14,6 +14,7 @@ defmodule QueryParser.AST.EctoParser do
     In,
     MeRef,
     NumberValue,
+    Or,
     Query,
     StringValue
   }
@@ -47,6 +48,14 @@ defmodule QueryParser.AST.EctoParser do
     |> Enum.map(&parse_expr(&1, ctx))
     |> Enum.reduce(fn acc, expr ->
       dynamic([d], ^acc and ^expr)
+    end)
+  end
+
+  defp parse_expr(%Or{clauses: clauses}, ctx) do
+    clauses
+    |> Enum.map(&parse_expr(&1, ctx))
+    |> Enum.reduce(fn acc, expr ->
+      dynamic([d], ^acc or ^expr)
     end)
   end
 
@@ -95,5 +104,9 @@ defmodule QueryParser.AST.EctoParser do
 
   defp parse_expr(%NumberValue{value: value}, _ctx) do
     value
+  end
+
+  defp parse_expr(%unknown{}, _ctx) do
+    raise "Could not parse #{unknown} struct."
   end
 end
