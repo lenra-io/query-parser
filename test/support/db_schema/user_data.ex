@@ -6,7 +6,7 @@ defmodule QueryParser.UserData do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias QueryParser.{Data, UserData, FakeLenraUser}
+  alias QueryParser.{Data, FakeLenraUser, UserData}
 
   @derive {Jason.Encoder, only: [:id, :user_id, :data_id]}
   schema "user_datas" do

@@ -49,9 +49,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.COMPONENTS_API_SSH }}
       - uses: actions/checkout@v2
         with:
           submodules: true
