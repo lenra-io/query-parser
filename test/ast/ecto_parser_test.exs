@@ -377,4 +377,36 @@ defmodule QueryParser.ATS.EctoParserTest do
     assert length(res) == 1
     assert todo1["_id"] == todo4_id
   end
+
+  test "Select with simple $or", %{
+    user_data_id: user_data_id,
+    env_id: env_id,
+    todo2_id: todo2_id,
+    todo3_id: todo3_id
+  } do
+    res =
+      %{
+        "$find" => %{
+          "_datastore" => "todos",
+          "$or" => [
+            %{
+              "title" => "Faire le ménage",
+            }, %{
+              "title" => "Faire la cuisine"
+            }
+          ]
+
+        }
+      }
+      |> Parser.from_json()
+      |> EctoParser.to_ecto(env_id, user_data_id)
+      |> IO.inspect()
+      |> Repo.all()
+
+    assert length(res) == 2
+    [todo2, todo3] = res
+    assert todo2["_id"] == todo2_id
+    assert todo3["_id"] == todo3_id
+
+  end
 end

@@ -242,4 +242,28 @@ defmodule QueryParser.AST.ParserTest do
              select: %AST.Select{clause: nil}
            }
   end
+
+  test "Simple Or clauses" do
+    assert AST.Parser.from_json(%{
+             "$find" => %{
+               "$or" => [
+                 %{"_datastore" => "_users"},
+                 %{"_datastore" => "_truc"}
+               ]
+             }
+           }) == %AST.Query{
+             find: %AST.Find{
+               clause: %AST.Or{
+                 clauses: [%AST.Eq{
+                 left: %AST.DataKey{key_path: ["_datastore"]},
+                 right: %AST.StringValue{value: "_users"}
+               }, %AST.Eq{
+                left: %AST.DataKey{key_path: ["_datastore"]},
+                right: %AST.StringValue{value: "_truc"}
+              }]
+              }
+             },
+             select: %AST.Select{clause: nil}
+           }
+  end
 end
