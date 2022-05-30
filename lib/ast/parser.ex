@@ -101,7 +101,7 @@ defmodule QueryParser.AST.Parser do
     %And{clauses: Enum.map(clauses, &parse_expr(&1, ctx))}
   end
 
-  #Or function
+  # Or function
   defp parse_fun({"$or", clauses}, ctx) when is_list(clauses) do
     %Or{clauses: Enum.map(clauses, &parse_expr(&1, ctx))}
   end
@@ -124,11 +124,9 @@ defmodule QueryParser.AST.Parser do
     %In{field: left, values: Enum.map(clauses, &parse_expr(&1, ctx))}
   end
 
-
-  defp parse_fun({name, _value}, _ctx)  do
+  defp parse_fun({name, _value}, _ctx) do
     raise "Could not parse function #{name}. Validator should not accept this function."
   end
-
 
   defp from_k(key, _ctx) when is_bitstring(key) do
     %DataKey{key_path: String.split(key, ".")}

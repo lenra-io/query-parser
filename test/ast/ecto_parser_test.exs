@@ -37,15 +37,13 @@ defmodule QueryParser.ATS.EctoParserTest do
 
     # 2
     {:ok, %{id: todolist1_id}} =
-      Repo.insert(Data.new(datastore_todoList_id, %{"name" => "favorites"}))
+      Repo.insert(Data.new(datastore_todo_list_id, %{"name" => "favorites"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todolist1_id, ref_by_id: user_data_id}))
 
     # 3
     {:ok, %{id: todolist2_id}} =
-      Repo.insert(Data.new(datastore_todoList_id, %{"name" => "not fav"}))
-
-    Repo.insert(DataReferences.new(%{refs_id: todolist2_id, ref_by_id: user_data_id}))
+      Repo.insert(Data.new(datastore_todo_list_id, %{"name" => "not fav"}))
 
     Repo.insert(DataReferences.new(%{refs_id: todolist2_id, ref_by_id: user_data_id}))
 
@@ -55,13 +53,9 @@ defmodule QueryParser.ATS.EctoParserTest do
 
     Repo.insert(DataReferences.new(%{refs_id: todo1_id, ref_by_id: todolist1_id}))
 
-    Repo.insert(DataReferences.new(%{refs_id: todo1_id, ref_by_id: todolist1_id}))
-
     # 5
     {:ok, %{id: todo2_id}} =
       Repo.insert(Data.new(datastore_todos_id, %{"title" => "Faire la cuisine"}))
-
-    Repo.insert(DataReferences.new(%{refs_id: todo2_id, ref_by_id: todolist1_id}))
 
     Repo.insert(DataReferences.new(%{refs_id: todo2_id, ref_by_id: todolist1_id}))
 
@@ -373,8 +367,9 @@ defmodule QueryParser.ATS.EctoParserTest do
       }
       |> Parser.from_json()
       |> EctoParser.to_ecto(env_id, user_data_id)
-      |> IO.inspect()
       |> Repo.all()
+
+    res = Enum.sort_by(res, & &1["_id"], :asc)
 
     assert length(res) == 2
     [todo2, todo3] = res

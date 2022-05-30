@@ -33,7 +33,7 @@ defmodule QueryParser.AST.ParserTest do
            }
   end
 
-  test "Simple equal whit boolean value" do
+  test "Simple equal with boolean value" do
     assert AST.Parser.from_json(%{
              "$find" => %{
                "valid" => true
@@ -270,14 +270,17 @@ defmodule QueryParser.AST.ParserTest do
            }) == %AST.Query{
              find: %AST.Find{
                clause: %AST.Or{
-                 clauses: [%AST.Eq{
-                 left: %AST.DataKey{key_path: ["_datastore"]},
-                 right: %AST.StringValue{value: "_users"}
-               }, %AST.Eq{
-                left: %AST.DataKey{key_path: ["_datastore"]},
-                right: %AST.StringValue{value: "_truc"}
-              }]
-              }
+                 clauses: [
+                   %AST.Eq{
+                     left: %AST.DataKey{key_path: ["_datastore"]},
+                     right: %AST.StringValue{value: "_users"}
+                   },
+                   %AST.Eq{
+                     left: %AST.DataKey{key_path: ["_datastore"]},
+                     right: %AST.StringValue{value: "_truc"}
+                   }
+                 ]
+               }
              },
              select: %AST.Select{clause: nil}
            }
