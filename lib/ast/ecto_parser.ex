@@ -7,6 +7,7 @@ defmodule QueryParser.AST.EctoParser do
   alias QueryParser.AST.{
     And,
     ArrayValue,
+    BooleanValue,
     Contains,
     DataKey,
     Eq,
@@ -103,6 +104,10 @@ defmodule QueryParser.AST.EctoParser do
   end
 
   defp parse_expr(%NumberValue{value: value}, _ctx) do
+    value
+  end
+
+  defp parse_expr(%BooleanValue{value: value}, _ctx) do
     value
   end
 
