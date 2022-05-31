@@ -77,7 +77,7 @@ information about the format of the JSON query consult this [README](). To parse
 $\qquad$ with q the JSON query
 
 ### AST to Ecto
-Once you parse JSON query into the ast tree you will be able to parse this ast into Ecto query:
+Once you parse a JSON query into an AST tree you will be able to parse this AST into an Ecto query:
 
 > $\qquad$ Add the alias:
 ```
