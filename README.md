@@ -99,7 +99,7 @@ you can now execute the query with ecto:
 Repo.all(ecto_query)
 Repo.one(ecto_query)
 ```
-with ecto_query the query parse before, function all return a list of all matching result, fucntion one return only one element (warning: if they are more than one result the function reurn error), to know more about the ecto repo [function](https://hexdocs.pm/ecto/Ecto.Repo.html#query-api)
+with ecto_query the query parse before, function all return a list of all matching result, function one return only one element (warning: if there are more than one result the function returns an error), to know more about the ecto repo [function](https://hexdocs.pm/ecto/Ecto.Repo.html#query-api)
 
 ### Two step together:
 
