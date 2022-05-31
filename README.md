@@ -60,88 +60,57 @@ You need to add this lib into your phoenix app :
 
 ## Parser
 
-The parser are in two step: 
-- Parse JSON query into an AST tree
-- Pasre the tree into JSON
+### JSON to AST
 
-The query format can be describe with:
+With the parser you can parse a JSON query into an AST tree, for more information about the formate of the JSON query consult this [README](). To parse JSON:
 
-```mermaid
-stateDiagram-v2
-      direction LR
-      [*]-->QUERY
-      QUERY-->FIND_FUNCTION
-      FIND_FUNCTION-->$find
-      $find -->MATCH_BODY
-      $find -->_datastore
-      _datastore --> STRING
-      MATCH_BODY --> BOOLEAN_MATCHING_FUNCTION
-      MATCH_BODY --> PROPERTY_CHECK
-      PROPERTY_CHECK --> STRING
-      STRING --> BOOLEAN_MATCHING_FUNCTION
-      BOOLEAN_MATCHING_FUNCTION_LIST --> MATCH_BODY
-      
-      
-      $match --> MATCH_BODY
-      $eq --> VALUE
-      $and --> BOOLEAN_MATCHING_FUNCTION_LIST
-      $or --> BOOLEAN_MATCHING_FUNCTION_LIST
-      $gt--> NUMBER
-      $lt --> NUMBER
-      $not --> MATCH_BODY      
-      
-      
-      state BOOLEAN_MATCHING_FUNCTION {
-        direction LR
-        MATCH_MATCHING_FUNCTION --> $match
-        EQ_MATCHING_FUNCTION --> VALUE
-        EQ_MATCHING_FUNCTION --> $eq
-        AND_MATCHING_FUNCTION --> $and 
-        OR_MATCHING_FUNCTION --> $or 
-        LT_MATCHING_FUNCTION --> $lt 
-        GT_MATCHING_FUNCTION --> $gt 
-        NOT_MATCHING_FUNCTION --> $not
-      }
-      state VALUE {
-        direction LR
-        STRING
-        BOOLEAN
-        OBJECT
-        ARRAY
-        NUMBER
-      }
+> $\qquad$ Add the alias:
 ```
-    
-### AST
-
-  The representation of the AST:
-
-```mermaid
-stateDiagram-v2
-      [*]-->Query
-      Query-->Find
-      Query-->Select
+  alias QueryParser.AST.Parser
 ```
 
-### Ecto
+> $\qquad$ Parse query with function:
+```
+  Parser.from_json(q)
+```
+$\qquad$ with q the JSON query
 
+### AST to Ecto
+Once you parse JSON query into the ast tree you will be able to parse this ast into Ecto query:
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+> $\qquad$ Add the alias:
+```
+  alias QueryParser.AST.EctoParser
+```
 
-<!-- USAGE EXAMPLES -->
-## Query
+> $\qquad$ Parse query with function:
+```
+  EctoParser.to_ecto(query, env_id, user_data_id)
+```
+$\qquad$ with:  
+$\qquad$ $\qquad$ - query the AST tree  
+$\qquad$ $\qquad$ - env_id the environement id  
+$\qquad$ $\qquad$ - user_data_id the id of the user's user data 
 
-  This is some exemples of how to use query function
+you can now execute the query with ecto:
 
-### And
+```
+Repo.all(ecto_query)
+Repo.one(ecto_query)
+```
+with ecto_query the query parse before, function all return a list of all matching result, fucntion one return only one element (warning: if they are more than one result the function reurn error), to know more about the ecto repo [function](https://hexdocs.pm/ecto/Ecto.Repo.html#query-api)
 
-### Eq
+### Two step together:
 
-### Contains
+> $\qquad$ Add the alias:
+```
+  alias QueryParser.AST.{EctoParser, Parser}
+```
 
-### In
-
-### Or
+> $\qquad$ Parse query with function:
+```
+  EctoParser.to_ecto(query, env_id, user_data_id)
+```
 
 
 
