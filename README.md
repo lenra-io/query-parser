@@ -35,7 +35,7 @@
 <h3 align="center">Lenra Query Parser</h3>
 
   <p align="center">
-    This repository provides an parser that can parse JSON query into an AST tree and parse this tree into Ecto query that can be execute with elixir.
+    This repository provides a tool that can parse a JSON query into an AST tree and parse this tree into an Ecto query that can be executed within elixir.
     <br />
     <br />
     <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">View Demo</a>
