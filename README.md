@@ -61,8 +61,9 @@ You need to add this lib into your phoenix app :
 ## Parser
 
 ### JSON to AST
-
-With the parser you can parse a JSON query into an AST tree, for more information about the formate of the JSON query consult this [README](). To parse JSON:
+<!-- Add the README link when this pr merge https://github.com/lenra-io/query-parser/pull/6 -->
+With the parser you can parse a JSON query into an AST tree, for more 
+information about the formate of the JSON query consult this [README](). To parse JSON:
 
 > $\qquad$ Add the alias:
 ```
@@ -109,9 +110,11 @@ with ecto_query the query parse before, function all return a list of all matchi
 
 > $\qquad$ Parse query with function:
 ```
-  EctoParser.to_ecto(query, env_id, user_data_id)
+  Query
+  |> Parser.from_json()
+  |> EctoParser.to_ecto(env_id, user_data_id)
+  |> Repo.all()
 ```
-
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
