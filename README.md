@@ -63,7 +63,7 @@ You need to add this lib into your phoenix app :
 ### JSON to AST
 <!-- Add the README link when this pr merge https://github.com/lenra-io/query-parser/pull/6 -->
 With the parser you can parse a JSON query into an AST tree, for more 
-information about the formate of the JSON query consult this [README](). To parse JSON:
+information about the format of the JSON query consult this [README](). To parse JSON:
 
 > $\qquad$ Add the alias:
 ```
