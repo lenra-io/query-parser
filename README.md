@@ -28,17 +28,17 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <!-- <a href="https://github.com/lenra-io/query-parser">
+  <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a> -->
 
-<h3 align="center">Query Parser</h3>
+<h3 align="center">Lenra Query Parser</h3>
 
   <p align="center">
-    This repository provides a parser that can transform JSON query into executable Ecto query.
+    This repository provides a tool that can parse a JSON query into an AST tree and parse this tree into an Ecto query that can be executed within elixir.
     <br />
     <br />
-    <!-- <a href="https://github.com/lenra-io/query-parser">View Demo</a>
+    <!-- <a href="https://github.com/lenra-io/template-hello-world-node12">View Demo</a>
     · -->
     <a href="https://github.com/lenra-io/query-parser/issues">Report Bug</a>
     ·
@@ -51,10 +51,74 @@
 
 ### Prerequisites
 
-<!-- USAGE EXAMPLES -->
-## Troubleshooting
+You need to add this lib into your phoenix app : 
+```bash
+    {:query_parser, git: "https://github.com/lenra-io/query-parser.git", tag: "v1.0.0-beta.X"}
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Parser
+
+### JSON to AST
+<!-- Add the README link when this pr merge https://github.com/lenra-io/query-parser/pull/6 -->
+With the parser you can parse a JSON query into an AST tree, for more 
+information about the format of the JSON query consult this [README](). To parse JSON:
+
+> $\qquad$ Add the alias:
+```
+  alias QueryParser.AST.Parser
+```
+
+> $\qquad$ Parse query with function:
+```
+  Parser.from_json(q)
+```
+$\qquad$ with q the JSON query
+
+### AST to Ecto
+Once you parse a JSON query into an AST tree you will be able to parse this AST into an Ecto query:
+
+> $\qquad$ Add the alias:
+```
+  alias QueryParser.AST.EctoParser
+```
+
+> $\qquad$ Parse query with function:
+```
+  EctoParser.to_ecto(query, env_id, user_data_id)
+```
+$\qquad$ with:  
+$\qquad$ $\qquad$ - query the AST tree  
+$\qquad$ $\qquad$ - env_id the environement id  
+$\qquad$ $\qquad$ - user_data_id the id of the user's user data 
+
+you can now execute the query with ecto:
 
 ```
+Repo.all(ecto_query)
+Repo.one(ecto_query)
+```
+with ecto_query the query is parsed before, the all function returns a list of all matching results, the one function returns only one element (beware: if there is more than one result the function returns an error), to learn more about the ecto repository  [function](https://hexdocs.pm/ecto/Ecto.Repo.html#query-api)
+
+### Two step together:
+
+> $\qquad$ Add the alias:
+```
+  alias QueryParser.AST.{EctoParser, Parser}
+```
+
+> $\qquad$ Parse query with function:
+```
+  Query
+  |> Parser.from_json()
+  |> EctoParser.to_ecto(env_id, user_data_id)
+  |> Repo.all()
+```
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -89,13 +153,13 @@ Project Link: [https://github.com/lenra-io/query-parser](https://github.com/lenr
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/query-parser.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [contributors-url]: https://github.com/lenra-io/query-parser/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lenra-io/query-parser.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [forks-url]: https://github.com/lenra-io/query-parser/network/members
-[stars-shield]: https://img.shields.io/github/stars/lenra-io/query-parser.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [stars-url]: https://github.com/lenra-io/query-parser/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lenra-io/query-parser.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [issues-url]: https://github.com/lenra-io/query-parser/issues
-[license-shield]: https://img.shields.io/github/license/lenra-io/query-parser.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/lenra-io/template-hello-world-node12.svg?style=for-the-badge
 [license-url]: https://github.com/lenra-io/query-parser/blob/master/LICENSE.txt
