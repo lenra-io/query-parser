@@ -21,7 +21,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![AGPL License][license-shield]][license-url]
 
 
 
@@ -135,7 +135,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the **MIT** License. See [LICENSE](./LICENSE) for more information.
+Distributed under the **AGPL** License. See [LICENSE](./LICENSE) for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -153,13 +153,13 @@ Project Link: [https://github.com/lenra-io/query-parser](https://github.com/lenr
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/template-hello-world-node12.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/lenra-io/query-parser.svg?style=for-the-badge
 [contributors-url]: https://github.com/lenra-io/query-parser/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lenra-io/template-hello-world-node12.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/lenra-io/query-parser.svg?style=for-the-badge
 [forks-url]: https://github.com/lenra-io/query-parser/network/members
-[stars-shield]: https://img.shields.io/github/stars/lenra-io/template-hello-world-node12.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/lenra-io/query-parser.svg?style=for-the-badge
 [stars-url]: https://github.com/lenra-io/query-parser/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lenra-io/template-hello-world-node12.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/lenra-io/query-parser.svg?style=for-the-badge
 [issues-url]: https://github.com/lenra-io/query-parser/issues
-[license-shield]: https://img.shields.io/github/license/lenra-io/template-hello-world-node12.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/lenra-io/query-parser.svg?style=for-the-badge
 [license-url]: https://github.com/lenra-io/query-parser/blob/master/LICENSE.txt
