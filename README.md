@@ -162,4 +162,4 @@ Project Link: [https://github.com/lenra-io/query-parser](https://github.com/lenr
 [issues-shield]: https://img.shields.io/github/issues/lenra-io/query-parser.svg?style=for-the-badge
 [issues-url]: https://github.com/lenra-io/query-parser/issues
 [license-shield]: https://img.shields.io/github/license/lenra-io/query-parser.svg?style=for-the-badge
-[license-url]: https://github.com/lenra-io/query-parser/blob/master/LICENSE.txt
+[license-url]: https://github.com/lenra-io/query-parser/blob/master/LICENSE
