@@ -6,7 +6,6 @@ defmodule QueryParser.ExecTest do
       query
       |> Poison.encode!()
       |> QueryParser.Parser.parse!()
-      |> IO.inspect()
 
     QueryParser.Exec.find(data, ast)
   end
@@ -16,7 +15,6 @@ defmodule QueryParser.ExecTest do
       query
       |> Poison.encode!()
       |> QueryParser.Parser.parse!()
-      |> IO.inspect()
 
     QueryParser.Exec.match?(data, ast)
   end
