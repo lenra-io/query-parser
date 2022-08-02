@@ -9,7 +9,6 @@ defmodule QueryParser.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
-      aliases: aliases(),
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:ex_unit]
@@ -22,7 +21,6 @@ defmodule QueryParser.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {QueryParser.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -38,25 +36,33 @@ defmodule QueryParser.MixProject do
     [
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:ecto_sql, "~> 3.4"},
-      {:postgrex, "~> 0.15.8", only: [:test], runtime: false},
-      {:jason, "~> 1.2"}
+      {:execjs, "~> 2.0", only: [:test], runtime: false},
+      {:mongodb_driver, "~> 0.9.1", only: [:test], runtime: false},
+      {:neotomex, "~> 0.1.7"},
+      {:poison, "~> 5.0", override: true},
+      private_git(
+        name: :lenra_common,
+        host: "github.com",
+        project: "lenra-io/lenra-common.git",
+        tag: "v2.0.4",
+        credentials: "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}"
+      )
     ]
   end
 
-  # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to install project dependencies and perform other setup tasks, run:
-  #
-  #     $ mix setup
-  #
-  # See the documentation for `Mix` for more info on aliases.
-  defp aliases do
-    [
-      setup: ["deps.get", "ecto.setup"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
-    ]
+  defp private_git(opts) do
+    name = Keyword.fetch!(opts, :name)
+    host = Keyword.fetch!(opts, :host)
+    project = Keyword.fetch!(opts, :project)
+    tag = Keyword.fetch!(opts, :tag)
+    credentials = Keyword.get(opts, :credentials)
+
+    case System.get_env("CI") do
+      "true" ->
+        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag, submodules: true}
+
+      _ ->
+        {name, git: "git@#{host}:#{project}", tag: tag, submodules: true}
+    end
   end
 end
