@@ -3,8 +3,10 @@ defmodule QueryParser.Parser do
   alias QueryParser.Errors.BusinessError
 
   @dialyzer {:nowarn_function, parse: 1}
-
+  @dialyzer {:nowarn_function, parse: 2}
   @dialyzer {:nowarn_function, parse!: 1}
+  @dialyzer {:nowarn_function, parse!: 2}
+  @dialyzer {:nowarn_function, replace: 2}
 
   @spec parse(String.t(), map()) :: {:ok, any()} | {:error, LenraCommon.Errors.BusinessError.t()}
   def parse(query_str, params \\ %{}) do
