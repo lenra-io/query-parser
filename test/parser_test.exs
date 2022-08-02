@@ -18,12 +18,98 @@ defmodule QueryParser.ParserTest do
     end
   end
 
+  defmacro custom(expected, query, params \\ %{}) do
+    quote do
+      assert unquote(expected) = Parser.parse(Jason.encode!(unquote(query)), unquote(params))
+    end
+  end
+
   # defmacro not_compatible(query) do
   #   quote do
   #     assert%{:error, _} = Parser.parse(Jason.encode!(unquote(query)))
   #     assert%{:error, _} = JsParser.parse(Jason.encode!(unquote(query)))
   #   end
   # end
+
+  describe "custom behaviors" do
+    test "should replace param-ref node when @foo.bar is set as value" do
+      custom(
+        {:ok,
+         %{
+           "pos" => "expression",
+           "clauses" => [
+             %{
+               "key" => "stuff",
+               "pos" => "leaf-clause",
+               "value" => %{
+                 "pos" => "leaf-value",
+                 "value" => 42
+               }
+             }
+           ]
+         }},
+        %{"stuff" => "@foo.bar"},
+        %{"foo" => %{"bar" => 42}}
+      )
+    end
+
+    test "should replace param-ref node when @foo is set as value" do
+      custom(
+        {:ok,
+         %{
+           "pos" => "expression",
+           "clauses" => [
+             %{
+               "key" => "stuff",
+               "pos" => "leaf-clause",
+               "value" => %{
+                 "pos" => "leaf-value",
+                 "value" => 1337
+               }
+             }
+           ]
+         }},
+        %{"stuff" => "@foo"},
+        %{"foo" => 1337}
+      )
+    end
+
+    test "should replace multiple param-ref nodes if refs are in an array" do
+      custom(
+        {:ok,
+         %{
+           "pos" => "expression",
+           "clauses" => [
+             %{
+               "key" => "stuff",
+               "pos" => "leaf-clause",
+               "value" => %{
+                 "pos" => "operator-expression",
+                 "operators" => [
+                   %{
+                     "operator" => "$in",
+                     "pos" => "list-operator",
+                     "values" => [
+                       %{
+                         "pos" => "leaf-value",
+                         "value" => 1337
+                       },
+                       %{
+                         "pos" => "leaf-value",
+                         "value" => "Nice"
+                       }
+                     ]
+                   }
+                 ]
+               }
+             }
+           ]
+         }},
+        %{"stuff" => %{"$in" => ["@foo.bar", "@foo.baz"]}},
+        %{"foo" => %{"bar" => 1337, "baz" => "Nice"}}
+      )
+    end
+  end
 
   describe "Errors on parsing" do
     test "should return an error on an invalid query",

@@ -1,20 +1,20 @@
 defmodule QueryParser.ExecTest do
   use ExUnit.Case
 
-  def parse_and_exec(data, query) do
+  def parse_and_exec(data, query, params \\ %{}) do
     ast =
       query
       |> Poison.encode!()
-      |> QueryParser.Parser.parse!()
+      |> QueryParser.Parser.parse!(params)
 
     QueryParser.Exec.find(data, ast)
   end
 
-  def parse_and_match?(data, query) do
+  def parse_and_match?(data, query, params \\ %{}) do
     ast =
       query
       |> Poison.encode!()
-      |> QueryParser.Parser.parse!()
+      |> QueryParser.Parser.parse!(params)
 
     QueryParser.Exec.match?(data, ast)
   end
@@ -56,6 +56,26 @@ defmodule QueryParser.ExecTest do
 
     test "nested match should return true" do
       assert parse_and_match?(%{"a" => %{"b" => "c"}}, %{"a.b" => "c"})
+    end
+  end
+
+  describe "exec/2 custom features param-ref" do
+    test "Simple param-ref @foo should be replaced by 1" do
+      assert [%{"_id" => 1}] = parse_and_exec(data(), %{"_id" => "@foo"}, %{"foo" => 1})
+    end
+
+    test "Simple param-ref @foo.bar should be replaced by 1" do
+      assert [%{"_id" => 1}] =
+               parse_and_exec(data(), %{"_id" => "@foo.bar"}, %{"foo" => %{"bar" => 1}})
+    end
+
+    test "Simple param-ref @foo.bar and @foo.baz should be replaced by 1 and 2" do
+      assert [%{"_id" => 1}, %{"_id" => 2}] =
+               parse_and_exec(
+                 data(),
+                 %{"_id" => %{"$in" => ["@foo.bar", "@foo.baz"]}},
+                 %{"foo" => %{"bar" => 1, "baz" => 2}}
+               )
     end
   end
 

@@ -158,7 +158,8 @@ defmodule QueryParser.Parser.Grammar do
   define(
     :leaf_value,
     # TODO: add extended_json_value &
-    "false / null / true / object / number / string / array"
+    # Custom addition param_ref
+    "false / null / true / object / number / param_ref / string / array"
   )
 
   define(true, "'true'", do: (_ -> true))
@@ -239,6 +240,16 @@ defmodule QueryParser.Parser.Grammar do
   # define :string, "<'\"'> (<!'\"'> ('\\\\' / '\\\"' / .))*  <'\"'>" do
   #   [chars] -> Enum.join(for [c] <- chars, do: c)
   # end
+
+  define :param_ref,
+         "<quotation_mark> <'@'> varname (<decimal_point> varname)* <quotation_mark>" do
+    [varname, rest_varname] ->
+      %{"pos" => "param-ref", "path" => [varname | Enum.map(rest_varname, fn [v] -> v end)]}
+  end
+
+  define :varname, "[a-zA-Z_$][a-zA-Z_$0-9]*" do
+    [first, chars] -> Enum.join([first | chars])
+  end
 
   define :string, "<quotation_mark> (<!'\"'> ('\\\\' / '\\\"' / .))* <quotation_mark>" do
     [chars] -> Enum.join(for [c] <- chars, do: c)

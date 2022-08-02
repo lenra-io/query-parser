@@ -4,6 +4,7 @@ defmodule QueryParser.Exec do
     Enum.filter(list, &exec?(ast, &1, %{}))
   end
 
+  @spec find(map(), String.t()) :: list()
   def match?(elem, ast) do
     exec?(ast, elem, %{})
   end
@@ -33,7 +34,11 @@ defmodule QueryParser.Exec do
     Enum.all?(operators, &exec?(&1, elem, ctx))
   end
 
-  defp exec?(%{"pos" => "list-operator", "operator" => operator, "values" => values}, elem, ctx) do
+  defp exec?(
+         %{"pos" => "list-operator", "operator" => operator, "values" => values},
+         elem,
+         ctx
+       ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
     transformed_values = Enum.map(values, &exec_value(&1, elem, ctx))
 
@@ -44,7 +49,11 @@ defmodule QueryParser.Exec do
     end
   end
 
-  defp exec?(%{"pos" => "value-operator", "operator" => operator, "value" => value}, elem, ctx) do
+  defp exec?(
+         %{"pos" => "value-operator", "operator" => operator, "value" => value},
+         elem,
+         ctx
+       ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
 
     case operator do
