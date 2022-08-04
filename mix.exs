@@ -39,7 +39,7 @@ defmodule QueryParser.MixProject do
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:mongodb_driver, "~> 0.9.1", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
-      {:poison, "~> 5.0", override: true},
+      {:poison, "~> 4.0"},
       private_git(
         name: :lenra_common,
         host: "github.com",
