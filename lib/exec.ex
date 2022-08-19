@@ -1,18 +1,35 @@
 defmodule QueryParser.Exec do
+  @moduledoc """
+    This is the Exec module.
+    It takes care of executing the AST query into the data passed.
+  """
+
+  @doc """
+    The find will return all the elements that match the query.
+  """
   @spec find(list(), String.t()) :: list()
   def find(list, ast) do
     Enum.filter(list, &exec?(ast, &1, %{}))
   end
 
-  @spec find(map(), String.t()) :: list()
+  @doc """
+  The match will take a single element and check that the element actually match the ast query.
+  """
+  @spec match?(map(), String.t()) :: boolean()
   def match?(elem, ast) do
     exec?(ast, elem, %{})
   end
 
+  @doc """
+  exec? will take a bool expression and execute it on the element.
+  It returns true if the elem matches the expression.
+  """
+  # Case of a "expression" with a list of clauses. All clauses must match.
   defp exec?(%{"pos" => "expression", "clauses" => clauses}, elem, ctx) do
     Enum.all?(clauses, &exec?(&1, elem, ctx))
   end
 
+  # Case of a "expression-tree-clause". Apply the operator on the expression list.
   defp exec?(
          %{
            "pos" => "expression-tree-clause",
@@ -34,6 +51,7 @@ defmodule QueryParser.Exec do
     Enum.all?(operators, &exec?(&1, elem, ctx))
   end
 
+  # "list-operator" are applied on a list.
   defp exec?(
          %{"pos" => "list-operator", "operator" => operator, "values" => values},
          elem,

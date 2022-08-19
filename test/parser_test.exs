@@ -4,6 +4,9 @@ defmodule QueryParser.ParserTest do
   alias QueryParser.JsParser
   alias QueryParser.Parser
 
+  @doc """
+  This macro will exec the Elixir parser and JS parser and check that both are equal.
+  """
   defmacro supported(query) do
     quote do
       assert Parser.parse(Jason.encode!(unquote(query))) ==
@@ -11,6 +14,10 @@ defmodule QueryParser.ParserTest do
     end
   end
 
+  @doc """
+  This macro will check that the JSParser feature does work but elixir does not.
+  These features are "not supported" by the elixir parser.
+  """
   defmacro not_supported(query) do
     quote do
       assert {:error, _} = Parser.parse(Jason.encode!(unquote(query)))

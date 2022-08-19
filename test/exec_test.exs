@@ -19,6 +19,9 @@ defmodule QueryParser.ExecTest do
     QueryParser.Exec.match?(data, ast)
   end
 
+  @doc """
+  This generate a single data Map for test purpose.
+  """
   def datum(idx) do
     even? = rem(idx, 2) == 0
     parity = if even?, do: "even", else: "odd"
@@ -41,6 +44,9 @@ defmodule QueryParser.ExecTest do
     }
   end
 
+  @doc """
+  This will generate a list of 10 test data.
+  """
   def data do
     Enum.map(1..10, &datum/1)
   end

@@ -1,17 +1,30 @@
 defmodule QueryParser.Parser.Grammar do
   @moduledoc """
     This module define the mongo grammar
+
+    This grammar will transform the query string into a AST tree.
+
+    This is a 1 to 1 transformation of the mongo_language_model : https://github.com/mongodb-js/mongodb-language-model/blob/master/grammar.pegjs
+
+    Some features are missing and could be added later.
   """
   use Neotomex.ExGrammar
 
+  # This is the entrypoint. The query string parser will start here
   @root true
   define(:query, "expression")
 
+  # This is an expression
+  # The elements wrapped in <> are ignored in the function argument.
+  # Only the clause_inner? will be in the argument list (only one).
   define :expression, "<begin_object> clause_inner? <end_object>" do
     [nil] -> %{"pos" => "expression", "clauses" => []}
     [clauses] -> %{"pos" => "expression", "clauses" => clauses}
   end
 
+  # Here, the first element in the arg list is the first "clause" element : head
+  # The second argument in the list is the (<value_separator> clause)* : rest
+  # Since the second "rest" argument is a (...)*, its a list.
   define :clause_inner, "clause (<value_separator> clause)*" do
     [head, rest] -> [head | Enum.map(rest, fn [c] -> c end)] |> Enum.reverse()
   end
