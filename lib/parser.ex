@@ -5,6 +5,8 @@ defmodule QueryParser.Parser do
   alias QueryParser.Errors.BusinessError
   alias QueryParser.Parser.Grammar
 
+  # Sadly, the warning in the grammar file do propagate with these function.
+  # I ignore them too...
   @dialyzer {:nowarn_function, parse: 1}
   @dialyzer {:nowarn_function, parse: 2}
   @dialyzer {:nowarn_function, parse!: 1}

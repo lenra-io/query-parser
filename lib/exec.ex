@@ -7,7 +7,7 @@ defmodule QueryParser.Exec do
   @doc """
     The find will return all the elements that match the query.
   """
-  @spec find(list(), String.t()) :: list()
+  @spec find(list(), map()) :: list()
   def find(list, ast) do
     Enum.filter(list, &exec?(ast, &1, %{}))
   end
@@ -15,7 +15,7 @@ defmodule QueryParser.Exec do
   @doc """
   The match will take a single element and check that the element actually match the ast query.
   """
-  @spec match?(map(), String.t()) :: boolean()
+  @spec match?(map(), map()) :: boolean()
   def match?(elem, ast) do
     exec?(ast, elem, %{})
   end

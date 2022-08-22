@@ -10,6 +10,13 @@ defmodule QueryParser.Parser.Grammar do
   """
   use Neotomex.ExGrammar
 
+  # No idea why but these function throw warning with dialyzer.
+  @dialyzer {:nowarn_function, parse: 1}
+  @dialyzer {:nowarn_function, parse!: 1}
+  @dialyzer {:nowarn_function, grammar: 0}
+  @dialyzer {:nowarn_function, validate: 0}
+  @dialyzer {:nowarn_function, validate!: 0}
+
   # This is the entrypoint. The query string parser will start here
   @root true
   define(:query, "expression")
