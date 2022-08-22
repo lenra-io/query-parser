@@ -37,7 +37,6 @@ defmodule QueryParser.MixProject do
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
       {:execjs, "~> 2.0", only: [:test], runtime: false},
-      {:mongodb_driver, "~> 0.9.1", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
       {:poison, "~> 5.0", override: true},
       private_git(

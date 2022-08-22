@@ -77,4 +77,4 @@ jobs:
       - name: Run tests
         run: mix test
       - name: Run dialyzer
-        run: MIX_ENV=test mix dialyzer --format short
+        run: mix dialyzer --format short
