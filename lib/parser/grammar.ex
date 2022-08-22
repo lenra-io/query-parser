@@ -111,28 +111,6 @@ defmodule QueryParser.Parser.Grammar do
     [operator, values] -> %{"pos" => "list-operator", "operator" => operator, "values" => values}
   end
 
-  # // elemmatch-expression-operator
-  # / quotation_mark "$elemMatch" quotation_mark name_separator expression:expression
-  # { return { pos: "elemmatch-expression-operator", expression: expression } }
-  # // operator-expression-operator
-  # / quotation_mark operator:operator_expression_operator quotation_mark name_separator opobject:operator_expression
-  # { return { pos: "operator-expression-operator", operator: operator, operators: opobject.operators } }
-  # // special case for $not accepting $regex
-  # / quotation_mark "$not" quotation_mark name_separator regexobject:ejson_regex
-  # { return { pos: "operator-expression-operator", operator: "$not", operators: regexobject } }
-  # // geo-within-operator
-  # / quotation_mark "$geoWithin" quotation_mark name_separator shape:shape
-  # { return { pos: "geo-within-operator", operator: "$geoWithin", shape: shape }; }
-  # // geo-intersects-operator
-  # / quotation_mark "$geoIntersects" quotation_mark name_separator geometry:geometry
-  # { return { pos: "geo-intersects-operator", operator: "$geoIntersects", geometry: geometry }; }
-  # // near-operator
-  # / quotation_mark near_operator:("$nearSphere" / "$near") quotation_mark name_separator value:(geometry_point / legacy_coordinates)
-  # { return { pos: "near-operator", operator: near_operator, value: value }; }
-  # // min-distance-operator
-  # / quotation_mark operator:distance_operator quotation_mark name_separator value:number_positive
-  # { return { pos: "distance-operator", operator: operator, value: value }; }
-
   define :leaf_value_list, "leaf_value_list_inner?" do
     nil -> []
     [clauses] -> clauses

@@ -1,6 +1,9 @@
 defmodule QueryParser.Parser do
-  alias QueryParser.Parser.Grammar
+  @moduledoc """
+    This Parser module will use the grammar to parse the query string into an AST.
+  """
   alias QueryParser.Errors.BusinessError
+  alias QueryParser.Parser.Grammar
 
   @dialyzer {:nowarn_function, parse: 1}
   @dialyzer {:nowarn_function, parse: 2}

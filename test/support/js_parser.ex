@@ -12,12 +12,10 @@ defmodule QueryParser.JsParser do
   end
 
   def parse(json) do
-    try do
-      res = parse!(json)
-      {:ok, res}
-    rescue
-      e ->
-        BusinessError.invalid_query_tuple()
-    end
+    res = parse!(json)
+    {:ok, res}
+  rescue
+    e ->
+      BusinessError.invalid_query_tuple()
   end
 end
