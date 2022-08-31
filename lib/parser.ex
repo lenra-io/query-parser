@@ -3,6 +3,7 @@ defmodule QueryParser.Parser do
     This Parser module will use the grammar to parse the query string into an AST.
   """
   alias QueryParser.Errors.BusinessError
+  alias LenraCommon.Errors.DevError
   alias QueryParser.Parser.Grammar
 
   # Sadly, the warning in the grammar file do propagate with these function.
@@ -50,6 +51,32 @@ defmodule QueryParser.Parser do
   end
 
   defp replace(e, _params) do
+    e
+  end
+
+  @param_regex ~r/^@(?!@)[a-zA-Z_$][a-zA-Z_$0-9]*(\.[a-zA-Z_$][a-zA-Z_$0-9]*)*$/
+
+  def replace_params(map, params) when is_map(map) and is_map(params) do
+    map
+    |> Enum.map(fn {k, v} -> {k, replace_params(v, params)} end)
+    |> Map.new()
+  end
+
+  def replace_params(list, params) when is_list(list) do
+    Enum.map(list, fn e -> replace_params(e, params) end)
+  end
+
+  def replace_params(str, params) when is_bitstring(str) do
+    if String.match?(str, @param_regex) do
+      "@" <> str_path = str
+      path = String.split(str_path, ".")
+      get_in(params, path)
+    else
+      str
+    end
+  end
+
+  def replace_params(e, _params) do
     e
   end
 end

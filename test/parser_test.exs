@@ -913,4 +913,46 @@ defmodule QueryParser.ParserTest do
       not_supported(%{"qty" => %{"$mod": [4, 0]}})
     end
   end
+
+  describe "Parser.replace_params/2" do
+    test "base param in a map" do
+      assert %{"foo" => "bar"} = Parser.replace_params(%{"foo" => "@me"}, %{"me" => "bar"})
+    end
+
+    test "path param in a map" do
+      assert %{"foo" => "bar"} =
+               Parser.replace_params(%{"foo" => "@me.stuff"}, %{"me" => %{"stuff" => "bar"}})
+    end
+
+    test "multiple path param in a map" do
+      assert %{"foo" => "bar", "bar" => "baz"} =
+               Parser.replace_params(
+                 %{"foo" => "@me.stuff", "bar" => "@user.name"},
+                 %{
+                   "me" => %{"stuff" => "bar"},
+                   "user" => %{"name" => "baz"}
+                 }
+               )
+    end
+
+    test "double @ to escape" do
+      assert %{"foo" => "@@me"} = Parser.replace_params(%{"foo" => "@@me"}, %{"me" => "bar"})
+    end
+
+    test "param name should accept _ letter and numbers to escape" do
+      assert %{"foo" => "bar"} = Parser.replace_params(%{"foo" => "@me_42"}, %{"me_42" => "bar"})
+    end
+
+    test "param name should accept var starting with _" do
+      assert %{"foo" => "bar"} = Parser.replace_params(%{"foo" => "@_me"}, %{"_me" => "bar"})
+    end
+
+    test "param name should NOT accept var starting with number" do
+      assert %{"foo" => "@42"} = Parser.replace_params(%{"foo" => "@42"}, %{"42" => "bar"})
+    end
+
+    test "param name should put null if param does not exist" do
+      assert %{"foo" => nil} = Parser.replace_params(%{"foo" => "@me"}, %{})
+    end
+  end
 end
