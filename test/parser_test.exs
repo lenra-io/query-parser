@@ -919,6 +919,13 @@ defmodule QueryParser.ParserTest do
       assert %{"foo" => "bar"} = Parser.replace_params(%{"foo" => "@me"}, %{"me" => "bar"})
     end
 
+    test "base param in a list" do
+      assert %{"foo" => ["bar"]} = Parser.replace_params(%{"foo" => ["@me"]}, %{"me" => "bar"})
+
+      assert %{"foo" => [%{"bar" => "baz"}]} =
+               Parser.replace_params(%{"foo" => [%{"bar" => "@me"}]}, %{"me" => "baz"})
+    end
+
     test "path param in a map" do
       assert %{"foo" => "bar"} =
                Parser.replace_params(%{"foo" => "@me.stuff"}, %{"me" => %{"stuff" => "bar"}})
