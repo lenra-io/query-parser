@@ -43,7 +43,7 @@ defmodule QueryParser.MixProject do
         name: :lenra_common,
         host: "github.com",
         project: "lenra-io/lenra-common.git",
-        tag: "v2.0.4",
+        tag: "v2.2.0",
         credentials:
           "#{System.get_env("GITHUB_AUTH", "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}")}"
       )
