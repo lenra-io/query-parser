@@ -39,30 +39,7 @@ defmodule QueryParser.MixProject do
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
       {:poison, "~> 5.0", override: true},
-      private_git(
-        name: :lenra_common,
-        host: "github.com",
-        project: "lenra-io/lenra-common.git",
-        tag: "v2.2.0",
-        credentials:
-          "#{System.get_env("GITHUB_AUTH", "shiipou:#{System.get_env("GH_PERSONNAL_TOKEN")}")}"
-      )
+      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.2.0"}
     ]
-  end
-
-  defp private_git(opts) do
-    name = Keyword.fetch!(opts, :name)
-    host = Keyword.fetch!(opts, :host)
-    project = Keyword.fetch!(opts, :project)
-    tag = Keyword.fetch!(opts, :tag)
-    credentials = Keyword.get(opts, :credentials)
-
-    case System.get_env("CI") do
-      "true" ->
-        {name, git: "https://#{credentials}@#{host}/#{project}", tag: tag, submodules: true}
-
-      _ ->
-        {name, git: "git@#{host}:#{project}", tag: tag, submodules: true}
-    end
   end
 end
