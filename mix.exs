@@ -39,7 +39,7 @@ defmodule QueryParser.MixProject do
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
       {:poison, "~> 5.0", override: true},
-      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "8ba286a"}
+      {:lenra_common, git: "https://github.com/lenra-io/lenra-common.git", tag: "v2.3.0"}
     ]
   end
 end
