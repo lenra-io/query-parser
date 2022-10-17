@@ -1,6 +1,8 @@
 defmodule QueryParser.ExecTest do
   use ExUnit.Case
 
+  alias LenraCommon.Errors.BusinessError
+
   def parse_and_exec(data, query, params \\ %{}) do
     ast =
       query
@@ -31,6 +33,7 @@ defmodule QueryParser.ExecTest do
 
     %{
       "_id" => idx,
+      "ids" => [idx],
       "name" => "test#{idx}",
       "parity" => parity,
       "even" => even?,
@@ -39,7 +42,8 @@ defmodule QueryParser.ExecTest do
       "nested" => %{
         "name" => "test#{idx}",
         "parity" => parity,
-        "even" => even?
+        "even" => even?,
+        "#{idx}" => "hello"
       }
     }
   end
@@ -187,6 +191,34 @@ defmodule QueryParser.ExecTest do
       assert [
                %{"_id" => 1}
              ] = parse_and_exec(data(), %{"nested.name" => "test1"})
+    end
+
+    test "should return the test1 & test2 doc for nested element" do
+      assert [
+               %{"_id" => 1}
+             ] =
+               parse_and_exec(
+                 data(),
+                 %{"ids.0" => 1}
+               )
+    end
+
+    test "should return the test1 doc interger in path" do
+      assert [
+               %{"_id" => 1}
+             ] =
+               parse_and_exec(
+                 data(),
+                 %{"nested.1" => "hello"}
+               )
+    end
+
+    test "should return error if specify string for array" do
+      assert [] =
+               parse_and_exec(
+                 data(),
+                 %{"ids.test" => 1}
+               )
     end
 
     test "should return the even AND above id 5 docs using $and" do
