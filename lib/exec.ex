@@ -4,6 +4,8 @@ defmodule QueryParser.Exec do
     It takes care of executing the AST query into the data passed.
   """
 
+  alias LenraCommon.JsonHelper
+
   @doc """
     The find will return all the elements that match the query.
   """
@@ -101,7 +103,7 @@ defmodule QueryParser.Exec do
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
     key_list = String.split(key, ".")
-    elem_value = get_in(elem, key_list)
+    elem_value = JsonHelper.get_in_json(elem, key_list)
 
     # If the next element is a leaf-value, this is a "short equal"
     if Map.get(value, "pos") == "leaf-value" do
