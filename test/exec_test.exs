@@ -237,6 +237,39 @@ defmodule QueryParser.ExecTest do
              ] = parse_and_exec(data(), %{"_id" => %{"$in" => [1, 2, 5]}})
     end
 
+    test "should return objet if find in array" do
+      assert [
+               %{"_id" => 1}
+             ] = parse_and_exec(data(), %{"ids" => 1})
+    end
+
+    test "should return objet if find in array with function" do
+      assert [
+               %{"_id" => 1}
+             ] = parse_and_exec(data(), %{"ids" => %{"$lt" => 2}})
+    end
+
+    test "should return objet if find in array with many function" do
+      assert [
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"prev" => %{"$lt" => 2, "$gt" => 5}})
+    end
+
+    test "should return objet if find in array with many function 2" do
+      assert [
+               %{"_id" => 4},
+               %{"_id" => 5},
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"prev" => %{"$gt" => 2, "$lt" => 5}})
+    end
+
     test "should return any _id NOT in [1, 2, 5]" do
       assert [
                %{"_id" => 3},
