@@ -20,7 +20,7 @@ defmodule QueryParser.Parser do
         BusinessError.invalid_query_tuple(term)
 
       :mismatch ->
-        BusinessError.invalid_query_tuple(:mismatch)
+        BusinessError.invalid_query_tuple({:mismatch, query_str})
 
       {:ok, res} ->
         {:ok, replace(res, params)}
