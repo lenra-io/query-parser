@@ -17,8 +17,8 @@ defmodule QueryParser.Parser do
   @spec parse(String.t(), map()) :: {:ok, any()} | {:error, LenraCommon.Errors.BusinessError.t()}
   def parse(query_str, params \\ %{}) do
     case Grammar.parse(query_str) do
-      {:error, _term} ->
-        BusinessError.invalid_query_tuple()
+      {:error, term} ->
+        BusinessError.invalid_query_tuple(term)
 
       :mismatch ->
         BusinessError.invalid_query_tuple()
