@@ -4,6 +4,8 @@ defmodule QueryParser.Exec do
     It takes care of executing the AST query into the data passed.
   """
 
+  alias LenraCommon.JsonHelper
+
   @doc """
     The find will return all the elements that match the query.
   """
@@ -68,12 +70,20 @@ defmodule QueryParser.Exec do
   end
 
   defp exec?(
-         %{"pos" => "value-operator", "operator" => operator, "value" => value},
+         %{"pos" => "value-operator", "operator" => operator, "value" => value} = query,
          elem,
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
 
+    if is_list(elem_value) do
+      Enum.any?(elem_value, fn var -> execute_operator(operator, query, var, elem, ctx) end)
+    else
+      execute_operator(operator, query, elem_value, elem, ctx)
+    end
+  end
+
+  defp execute_operator(operator, %{"value" => value}, elem_value, elem, ctx) do
     case operator do
       "$eq" ->
         elem_value == exec_value(value, elem, ctx)
@@ -101,11 +111,15 @@ defmodule QueryParser.Exec do
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
     key_list = String.split(key, ".")
-    elem_value = get_in(elem, key_list)
+    elem_value = JsonHelper.get_in_json(elem, key_list)
 
     # If the next element is a leaf-value, this is a "short equal"
     if Map.get(value, "pos") == "leaf-value" do
-      elem_value == exec_value(value, elem, ctx)
+      if is_list(elem_value) do
+        Enum.any?(elem_value, fn var -> var == exec_value(value, elem, ctx) end)
+      else
+        elem_value == exec_value(value, elem, ctx)
+      end
     else
       ctx = Map.put(ctx, "elem_value", elem_value)
       exec?(value, elem, ctx)

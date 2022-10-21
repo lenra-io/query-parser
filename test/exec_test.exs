@@ -1,6 +1,8 @@
 defmodule QueryParser.ExecTest do
   use ExUnit.Case
 
+  alias LenraCommon.Errors.BusinessError
+
   def parse_and_exec(data, query, params \\ %{}) do
     ast =
       query
@@ -31,6 +33,7 @@ defmodule QueryParser.ExecTest do
 
     %{
       "_id" => idx,
+      "ids" => [idx],
       "name" => "test#{idx}",
       "parity" => parity,
       "even" => even?,
@@ -39,7 +42,8 @@ defmodule QueryParser.ExecTest do
       "nested" => %{
         "name" => "test#{idx}",
         "parity" => parity,
-        "even" => even?
+        "even" => even?,
+        "#{idx}" => "hello"
       }
     }
   end
@@ -189,6 +193,34 @@ defmodule QueryParser.ExecTest do
              ] = parse_and_exec(data(), %{"nested.name" => "test1"})
     end
 
+    test "should return the test1 & test2 doc for nested element" do
+      assert [
+               %{"_id" => 1}
+             ] =
+               parse_and_exec(
+                 data(),
+                 %{"ids.0" => 1}
+               )
+    end
+
+    test "should return the test1 doc interger in path" do
+      assert [
+               %{"_id" => 1}
+             ] =
+               parse_and_exec(
+                 data(),
+                 %{"nested.1" => "hello"}
+               )
+    end
+
+    test "should return error if specify string for array" do
+      assert [] =
+               parse_and_exec(
+                 data(),
+                 %{"ids.test" => 1}
+               )
+    end
+
     test "should return the even AND above id 5 docs using $and" do
       assert [
                %{"_id" => 6},
@@ -203,6 +235,39 @@ defmodule QueryParser.ExecTest do
                %{"_id" => 2},
                %{"_id" => 5}
              ] = parse_and_exec(data(), %{"_id" => %{"$in" => [1, 2, 5]}})
+    end
+
+    test "should return objet if find in array" do
+      assert [
+               %{"_id" => 1}
+             ] = parse_and_exec(data(), %{"ids" => 1})
+    end
+
+    test "should return objet if find in array with function" do
+      assert [
+               %{"_id" => 1}
+             ] = parse_and_exec(data(), %{"ids" => %{"$lt" => 2}})
+    end
+
+    test "should return objet if find in array with many function" do
+      assert [
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"prev" => %{"$lt" => 2, "$gt" => 5}})
+    end
+
+    test "should return objet if find in array with many function 2" do
+      assert [
+               %{"_id" => 4},
+               %{"_id" => 5},
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"prev" => %{"$gt" => 2, "$lt" => 5}})
     end
 
     test "should return any _id NOT in [1, 2, 5]" do
