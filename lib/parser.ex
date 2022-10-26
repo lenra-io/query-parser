@@ -18,10 +18,10 @@ defmodule QueryParser.Parser do
   def parse(query_str, params \\ %{}) do
     case Grammar.parse(query_str) do
       {:error, _term} ->
-        BusinessError.invalid_query_tuple()
+        BusinessError.invalid_query_tuple(query_str)
 
       :mismatch ->
-        BusinessError.invalid_query_tuple()
+        BusinessError.invalid_query_tuple(query_str)
 
       {:ok, res} ->
         {:ok, replace(res, params)}
