@@ -6,12 +6,13 @@ defmodule QueryParser.Exec do
 
   alias LenraCommon.JsonHelper
 
+  @all_operator ["$nin", "$not", "$nor"]
+
   @doc """
     The find will return all the elements that match the query.
   """
   @spec find(list(), map()) :: list()
   def find(list, ast) do
-    IO.inspect(ast)
     Enum.filter(list, &exec?(ast, &1, %{}))
   end
 
@@ -50,7 +51,7 @@ defmodule QueryParser.Exec do
     end
   end
 
-  # Case elem_valeu is list we want all operator match any of value
+  # Case elem_value is list we want exec for all operator on all value
   defp exec?(
          %{"pos" => "operator-expression", "operators" => operators},
          elem,
@@ -58,16 +59,30 @@ defmodule QueryParser.Exec do
        )
        when is_list(elem_value) do
     Enum.all?(operators, fn operator ->
-      if Map.get(operator, "operator") == "$all" do
-        exec?(operator, elem, ctx)
-      else
-        Enum.any?(
-          elem_value,
-          fn value ->
-            new_ctx = Map.replace!(ctx, "elem_value", value)
-            exec?(operator, elem, new_ctx)
-          end
-        )
+      case Map.get(operator, "operator") do
+        # $all need specific action
+        all_operator when all_operator == "$all" ->
+          exec?(operator, elem, ctx)
+
+        # not operator need cond match all the list add value in @all_operator
+        op when op in @all_operator ->
+          Enum.all?(
+            elem_value,
+            fn value ->
+              new_ctx = Map.replace!(ctx, "elem_value", value)
+              exec?(operator, elem, new_ctx)
+            end
+          )
+
+        # other operator need cond matchh any of the list
+        _common ->
+          Enum.any?(
+            elem_value,
+            fn value ->
+              new_ctx = Map.replace!(ctx, "elem_value", value)
+              exec?(operator, elem, new_ctx)
+            end
+          )
       end
     end)
   end
@@ -133,7 +148,9 @@ defmodule QueryParser.Exec do
     if Map.get(value, "pos") == "leaf-value" do
       # if value is list we want any equality
       if is_list(elem_value) do
-        Enum.any?(elem_value, fn var -> var == exec_value(value, elem, ctx) end)
+        Enum.any?(elem_value, fn var ->
+          var == exec_value(value, elem, ctx)
+        end)
       else
         elem_value == exec_value(value, elem, ctx)
       end
