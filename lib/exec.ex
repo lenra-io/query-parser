@@ -6,6 +6,8 @@ defmodule QueryParser.Exec do
 
   alias LenraCommon.JsonHelper
 
+  @all_operator ["$nin", "$not", "$nor"]
+
   @doc """
     The find will return all the elements that match the query.
   """
@@ -49,6 +51,30 @@ defmodule QueryParser.Exec do
     end
   end
 
+  # Case elem_value is list we want exec for all operator on all value
+  defp exec?(
+         %{"pos" => "operator-expression", "operators" => operators},
+         elem,
+         %{"elem_value" => elem_value} = ctx
+       )
+       when is_list(elem_value) do
+    Enum.all?(operators, fn operator ->
+      case Map.get(operator, "operator") do
+        # $all need specific action
+        all_operator when all_operator == "$all" ->
+          exec?(operator, elem, ctx)
+
+        # not operator need cond match all the list add value in @all_operator
+        op when op in @all_operator ->
+          exec_all(elem, elem_value, ctx, operator)
+
+        # other operator need cond matchh any of the list
+        _common ->
+          exec_any(elem, elem_value, ctx, operator)
+      end
+    end)
+  end
+
   defp exec?(%{"pos" => "operator-expression", "operators" => operators}, elem, ctx) do
     Enum.all?(operators, &exec?(&1, elem, ctx))
   end
@@ -60,6 +86,7 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
+
     transformed_values = Enum.map(values, &exec_value(&1, elem, ctx))
 
     case operator do
@@ -70,20 +97,12 @@ defmodule QueryParser.Exec do
   end
 
   defp exec?(
-         %{"pos" => "value-operator", "operator" => operator, "value" => value} = query,
+         %{"pos" => "value-operator", "operator" => operator, "value" => value},
          elem,
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
 
-    if is_list(elem_value) do
-      Enum.any?(elem_value, fn var -> execute_operator(operator, query, var, elem, ctx) end)
-    else
-      execute_operator(operator, query, elem_value, elem, ctx)
-    end
-  end
-
-  defp execute_operator(operator, %{"value" => value}, elem_value, elem, ctx) do
     case operator do
       "$eq" ->
         elem_value == exec_value(value, elem, ctx)
@@ -115,8 +134,11 @@ defmodule QueryParser.Exec do
 
     # If the next element is a leaf-value, this is a "short equal"
     if Map.get(value, "pos") == "leaf-value" do
+      # if value is list we want any equality
       if is_list(elem_value) do
-        Enum.any?(elem_value, fn var -> var == exec_value(value, elem, ctx) end)
+        Enum.any?(elem_value, fn var ->
+          var == exec_value(value, elem, ctx)
+        end)
       else
         elem_value == exec_value(value, elem, ctx)
       end
@@ -132,5 +154,25 @@ defmodule QueryParser.Exec do
 
   defp exec_value(%{"pos" => "leaf-value", "value" => value}, _elem, _ctx) do
     value
+  end
+
+  defp exec_all(elem, elem_value, ctx, operator) do
+    Enum.all?(
+      elem_value,
+      fn value ->
+        new_ctx = Map.replace!(ctx, "elem_value", value)
+        exec?(operator, elem, new_ctx)
+      end
+    )
+  end
+
+  defp exec_any(elem, elem_value, ctx, operator) do
+    Enum.any?(
+      elem_value,
+      fn value ->
+        new_ctx = Map.replace!(ctx, "elem_value", value)
+        exec?(operator, elem, new_ctx)
+      end
+    )
   end
 end

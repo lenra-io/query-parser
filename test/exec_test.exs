@@ -282,6 +282,30 @@ defmodule QueryParser.ExecTest do
              ] = parse_and_exec(data(), %{"_id" => %{"$nin" => [1, 2, 5]}})
     end
 
+    test "should return any _id NOT in [8,9]" do
+      assert [
+               %{"_id" => 1},
+               %{"_id" => 2},
+               %{"_id" => 3},
+               %{"_id" => 4},
+               %{"_id" => 5},
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8}
+             ] = parse_and_exec(data(), %{"prev" => %{"$nin" => [8, 9]}})
+    end
+
+    test "should return all elem with 4 & 5 elem in the prev array" do
+      assert [
+               %{"_id" => 5},
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"prev" => %{"$in" => [4, 5]}})
+    end
+
     test "should return all elem after _id 8 witch have $all [1, 2, 3] in the prev array" do
       assert [
                %{"_id" => 8},
