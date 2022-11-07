@@ -66,23 +66,11 @@ defmodule QueryParser.Exec do
 
         # not operator need cond match all the list add value in @all_operator
         op when op in @all_operator ->
-          Enum.all?(
-            elem_value,
-            fn value ->
-              new_ctx = Map.replace!(ctx, "elem_value", value)
-              exec?(operator, elem, new_ctx)
-            end
-          )
+          exec_all(elem, elem_value, ctx, operator)
 
         # other operator need cond matchh any of the list
         _common ->
-          Enum.any?(
-            elem_value,
-            fn value ->
-              new_ctx = Map.replace!(ctx, "elem_value", value)
-              exec?(operator, elem, new_ctx)
-            end
-          )
+          exec_any(elem, elem_value, ctx, operator)
       end
     end)
   end
@@ -166,5 +154,25 @@ defmodule QueryParser.Exec do
 
   defp exec_value(%{"pos" => "leaf-value", "value" => value}, _elem, _ctx) do
     value
+  end
+
+  defp exec_all(elem, elem_value, ctx, operator) do
+    Enum.all?(
+      elem_value,
+      fn value ->
+        new_ctx = Map.replace!(ctx, "elem_value", value)
+        exec?(operator, elem, new_ctx)
+      end
+    )
+  end
+
+  defp exec_any(elem, elem_value, ctx, operator) do
+    Enum.any?(
+      elem_value,
+      fn value ->
+        new_ctx = Map.replace!(ctx, "elem_value", value)
+        exec?(operator, elem, new_ctx)
+      end
+    )
   end
 end
