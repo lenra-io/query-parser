@@ -51,6 +51,21 @@ defmodule QueryParser.Exec do
     end
   end
 
+  defp exec?(
+         %{
+           "pos" => "operator-expression-operator",
+           "operator" => operator,
+           "operators" => operators
+         },
+         elem,
+         ctx
+       ) do
+    case operator do
+      "$not" -> !exec?(operators, elem, ctx)
+      _ -> raise "Operator #{inspect(operator)} is not supported"
+    end
+  end
+
   # Case elem_value is list we want exec for all operator on all value
   defp exec?(
          %{"pos" => "operator-expression", "operators" => operators},
@@ -86,7 +101,6 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
-
     transformed_values = Enum.map(values, &exec_value(&1, elem, ctx))
 
     case operator do

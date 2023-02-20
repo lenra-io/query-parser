@@ -363,5 +363,24 @@ defmodule QueryParser.ExecTest do
                %{"_id" => 10}
              ] = parse_and_exec(data(), %{"$nor" => [query]})
     end
+
+    test "should return all prv gretter than 5" do
+      assert [
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"_id" => %{"$gt" => 5}})
+
+      assert [
+               %{"_id" => 5},
+               %{"_id" => 6},
+               %{"_id" => 7},
+               %{"_id" => 8},
+               %{"_id" => 9},
+               %{"_id" => 10}
+             ] = parse_and_exec(data(), %{"_id" => %{"$not" => %{"$lt" => 5}}})
+    end
   end
 end

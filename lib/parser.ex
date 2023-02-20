@@ -2,7 +2,6 @@ defmodule QueryParser.Parser do
   @moduledoc """
   This Parser module will use the grammar to parse the query string into an AST.
   """
-  alias LenraCommon.Errors.DevError
   alias QueryParser.Errors.BusinessError
   alias QueryParser.Parser.Grammar
 
