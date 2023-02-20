@@ -90,7 +90,8 @@ defmodule QueryParser.Parser.Grammar do
   # / '$mod'")
   define(:list_operator, "'$in' / '$nin' / '$all'")
 
-  define(:operator_expression_operator, "'$not' / '$elemMatch'")
+  define(:operator_expression_operator, "'$not'")
+  # '$elemMatch'
 
   define :operator_expression, "<begin_object> operator_list <end_object>" do
     [nil] -> %{"pos" => "operator-expression", "operators" => []}
@@ -103,9 +104,8 @@ defmodule QueryParser.Parser.Grammar do
 
   define(
     :operator,
-    "value_operator_query / list_operator_query"
+    "value_operator_query / list_operator_query/ operator_expression_operator_query"
     # elemmatch_expression_operator /
-    # operator_expression_operator /
   )
 
   define :value_operator_query,
@@ -116,6 +116,12 @@ defmodule QueryParser.Parser.Grammar do
   define :list_operator_query,
          "<quotation_mark> list_operator <quotation_mark> <name_separator> <begin_array> leaf_value_list <end_array>" do
     [operator, values] -> %{"pos" => "list-operator", "operator" => operator, "values" => values}
+  end
+
+  define :operator_expression_operator_query,
+         "<quotation_mark> operator_expression_operator <quotation_mark> <name_separator> operator_expression" do
+    [operator, operators] ->
+      %{"pos" => "operator-expression-operator", "operator" => operator, "operators" => operators}
   end
 
   define :leaf_value_list, "leaf_value_list_inner?" do
