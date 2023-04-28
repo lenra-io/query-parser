@@ -76,8 +76,12 @@ defmodule QueryParser.Parser do
 
   def replace_params(str, params) when is_bitstring(str) do
     case Regex.named_captures(@param_regex, str) do
-      %{"operator" => _operator, "selector" => str_path} ->
+      %{"operator" => "", "selector" => str_path} ->
         path = String.split(str_path, ".")
+        get_in(params, path)
+
+      %{"operator" => operator, "selector" => str_path} ->
+        path = [operator | String.split(str_path, ".")]
         get_in(params, path)
 
       nil ->
