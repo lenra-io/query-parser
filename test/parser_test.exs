@@ -9,15 +9,8 @@ defmodule QueryParser.ParserTest do
   """
   defmacro supported(query) do
     quote do
-      {_status, res1} = Parser.parse(Jason.encode!(unquote(query)))
-      {_status, res2} = JsParser.parse(Poison.encode!(unquote(query)))
-
-      assert Map.equal?(
-               res1,
-               res2
-             )
-
-      # assert
+      assert Parser.parse(Jason.encode!(unquote(query))) ==
+               JsParser.parse(Poison.encode!(unquote(query)))
     end
   end
 
