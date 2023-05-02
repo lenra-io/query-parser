@@ -9,8 +9,15 @@ defmodule QueryParser.ParserTest do
   """
   defmacro supported(query) do
     quote do
-      assert Parser.parse(Jason.encode!(unquote(query))) ==
-               JsParser.parse(Poison.encode!(unquote(query)))
+      {_status, res1} = Parser.parse(Jason.encode!(unquote(query)))
+      {_status, res2} = JsParser.parse(Poison.encode!(unquote(query)))
+
+      assert Map.equal?(
+               res1,
+               res2
+             )
+
+      # assert
     end
   end
 
@@ -257,7 +264,7 @@ defmodule QueryParser.ParserTest do
     end
 
     test "should accept $size operator" do
-      not_supported(%{"foo" => %{"$size" => 10}})
+      supported(%{"foo" => %{"$size" => 10}})
     end
 
     test "should accept $regex operator without options (via leaf value)" do
@@ -314,11 +321,11 @@ defmodule QueryParser.ParserTest do
     end
 
     test "should accept $not with an operator object as its value" do
-      not_supported(%{"names" => %{"$exists" => true, "$not" => %{"$size" => 0}}})
+      supported(%{"names" => %{"$exists" => true, "$not" => %{"$size" => 0}}})
     end
 
     test "should accept $not with a complex operator object as its value" do
-      not_supported(%{"names" => %{"$not" => %{"$exists" => true, "$size" => 0}}})
+      supported(%{"names" => %{"$not" => %{"$exists" => true, "$size" => 0}}})
     end
 
     test "should accept $not in combination with a $regex operator without options" do

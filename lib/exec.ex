@@ -139,6 +139,9 @@ defmodule QueryParser.Exec do
       "$exists" ->
         nil? = nil == elem_value
         exec_value(value, elem, ctx) != nil?
+
+      "$size" ->
+        length(elem_value) == exec_value(value, elem, ctx)
     end
   end
 

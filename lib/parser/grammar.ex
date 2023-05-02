@@ -77,10 +77,10 @@ defmodule QueryParser.Parser.Grammar do
       '$lt' /
       '$eq' /
       '$ne' /
-      '$exists'"
+      '$exists' /
+      '$size'"
 
     #  '$type' /
-    #  '$size' /
     # '$bitsAllClear' /
     # '$bitsAllSet' /
     # '$bitsAnyClear' /
@@ -96,6 +96,11 @@ defmodule QueryParser.Parser.Grammar do
   define :operator_expression, "<begin_object> operator_list <end_object>" do
     [nil] -> %{"pos" => "operator-expression", "operators" => []}
     [operators] -> %{"pos" => "operator-expression", "operators" => operators}
+  end
+
+  define :not_operator_expression, "<begin_object> operator_list <end_object>" do
+    [nil] -> []
+    [operators] -> operators
   end
 
   define :operator_list, "operator (<value_separator> operator)*" do
@@ -119,7 +124,7 @@ defmodule QueryParser.Parser.Grammar do
   end
 
   define :operator_expression_operator_query,
-         "<quotation_mark> operator_expression_operator <quotation_mark> <name_separator> operator_expression" do
+         "<quotation_mark> operator_expression_operator <quotation_mark> <name_separator> not_operator_expression" do
     [operator, operators] ->
       %{"pos" => "operator-expression-operator", "operator" => operator, "operators" => operators}
   end
