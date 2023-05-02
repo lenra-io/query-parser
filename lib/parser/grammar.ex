@@ -38,8 +38,7 @@ defmodule QueryParser.Parser.Grammar do
 
   define(
     :clause,
-    "leaf_clause / expression_tree_clause"
-    # / text_clause
+    "leaf_clause / expression_tree_clause / text_clause"
     # / expression_clause
     # / where_clause
   )
@@ -89,6 +88,29 @@ defmodule QueryParser.Parser.Grammar do
 
   # / '$mod'")
   define(:list_operator, "'$in' / '$nin' / '$all'")
+
+  define(:text_operator, "'$text'")
+
+  define(:search_operator, "'$search'")
+
+  define(:text_options_value, "'string' / 'true' / 'false'")
+
+  define(:text_optional_operator, "'$language' / '$caseSensitive' / '$diacriticSensitive'")
+
+  define :text_options_optional,
+         "<quotation_mark> text_optional_operator <quotation_mark> <name_separator> text_options_value" do
+    [value] -> %{value: value}
+  end
+
+  define :text_options,
+         "<begin_object> <quotation_mark> search_operator <quotation_mark> <name_separator> string (<value_separator> text_options_optional)? <end_object>" do
+    [_operator, value, _text_options_optional] -> %{search: value}
+  end
+
+  define :text_clause,
+         "<quotation_mark> text_operator <quotation_mark> <name_separator> text_options" do
+    [_operator, %{search: value}] -> %{"pos" => "text-clause", "search" => value}
+  end
 
   define(:operator_expression_operator, "'$not'")
   # '$elemMatch'
