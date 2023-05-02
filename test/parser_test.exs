@@ -252,8 +252,8 @@ defmodule QueryParser.ParserTest do
     end
 
     test "should accept $type operator" do
-      not_supported(%{"foo" => %{"$type" => 3}})
-      not_supported(%{"foo" => %{"$type" => "string"}})
+      supported(%{"foo" => %{"$type" => 3}})
+      supported(%{"foo" => %{"$type" => "string"}})
     end
 
     test "should accept $size operator" do

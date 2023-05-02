@@ -8,6 +8,18 @@ defmodule QueryParser.Exec do
 
   @all_operator ["$nin", "$not", "$nor"]
 
+  defp is_bson_type(value, type) do
+    case type do
+      "string" -> is_binary(value)
+      "number" -> is_number(value)
+      "boolean" -> is_boolean(value)
+      "null" -> is_nil(value)
+      "array" -> is_list(value)
+      "object" -> is_map(value)
+      _ -> raise "Type #{inspect(type)} is not supported"
+    end
+  end
+
   @doc """
     The find will return all the elements that match the query.
   """
@@ -139,6 +151,9 @@ defmodule QueryParser.Exec do
       "$exists" ->
         nil? = nil == elem_value
         exec_value(value, elem, ctx) != nil?
+
+      "$type" ->
+        is_bson_type(elem_value, exec_value(value, elem, ctx))
     end
   end
 
