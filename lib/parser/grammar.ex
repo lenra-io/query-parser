@@ -77,8 +77,8 @@ defmodule QueryParser.Parser.Grammar do
       '$lt' /
       '$eq' /
       '$ne' /
-      '$exists' /
-      '$size'"
+      '$exists'"
+    # '$size'
 
     #  '$type' /
     # '$bitsAllClear' /
@@ -104,7 +104,7 @@ defmodule QueryParser.Parser.Grammar do
   end
 
   define :operator_list, "operator (<value_separator> operator)*" do
-    [head, rest] -> [head | Enum.map(rest, fn [m] -> m end)]
+    [head, rest] -> Enum.reverse([head | Enum.map(rest, fn [m] -> m end)])
   end
 
   define(

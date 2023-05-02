@@ -61,7 +61,7 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     case operator do
-      "$not" -> !exec?(operators, elem, ctx)
+      "$not" -> Enum.any?(operators, &!exec?(&1, elem, ctx))
       _ -> raise "Operator #{inspect(operator)} is not supported"
     end
   end
@@ -139,9 +139,6 @@ defmodule QueryParser.Exec do
       "$exists" ->
         nil? = nil == elem_value
         exec_value(value, elem, ctx) != nil?
-
-      "$size" ->
-        length(elem_value) == exec_value(value, elem, ctx)
     end
   end
 
