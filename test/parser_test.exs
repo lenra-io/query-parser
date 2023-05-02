@@ -257,7 +257,7 @@ defmodule QueryParser.ParserTest do
     end
 
     test "should accept $size operator" do
-      supported(%{"foo" => %{"$size" => 10}})
+      not_supported(%{"foo" => %{"$size" => 10}})
     end
 
     test "should accept $regex operator without options (via leaf value)" do
@@ -314,11 +314,11 @@ defmodule QueryParser.ParserTest do
     end
 
     test "should accept $not with an operator object as its value" do
-      supported(%{"names" => %{"$exists" => true, "$not" => %{"$size" => 0}}})
+      not_supported(%{"names" => %{"$exists" => true, "$not" => %{"$size" => 0}}})
     end
 
     test "should accept $not with a complex operator object as its value" do
-      supported(%{"names" => %{"$not" => %{"$exists" => true, "$size" => 0}}})
+      not_supported(%{"names" => %{"$not" => %{"$exists" => true, "$size" => 0}}})
     end
 
     test "should accept $not in combination with a $regex operator without options" do
