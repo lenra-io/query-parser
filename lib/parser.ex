@@ -53,7 +53,7 @@ defmodule QueryParser.Parser do
     e
   end
 
-  @param_regex ~r/^@(?!@)[a-zA-Z_$][a-zA-Z_$0-9]*(\.[a-zA-Z_$][a-zA-Z_$0-9]*)*$/
+  @param_regex ~r/^@(?!@)((?<operator>[a-zA-Z_$][a-zA-Z_$0-9]*):)?(?<selector>[a-zA-Z_$][a-zA-Z_$0-9]*(\.[a-zA-Z_$][a-zA-Z_$0-9]*)*)$/
 
   @doc """
     This function will take a valid mongo query and replace all param-ref (@foo.bar)
@@ -75,12 +75,17 @@ defmodule QueryParser.Parser do
   end
 
   def replace_params(str, params) when is_bitstring(str) do
-    if String.match?(str, @param_regex) do
-      "@" <> str_path = str
-      path = String.split(str_path, ".")
-      get_in(params, path)
-    else
-      str
+    case Regex.named_captures(@param_regex, str) do
+      %{"operator" => "", "selector" => str_path} ->
+        path = String.split(str_path, ".")
+        get_in(params, path)
+
+      %{"operator" => operator, "selector" => str_path} ->
+        path = [operator | String.split(str_path, ".")]
+        get_in(params, path)
+
+      nil ->
+        str
     end
   end
 

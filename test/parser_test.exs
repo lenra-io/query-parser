@@ -961,5 +961,15 @@ defmodule QueryParser.ParserTest do
     test "param name should put null if param does not exist" do
       assert %{"foo" => nil} = Parser.replace_params(%{"foo" => "@me"}, %{})
     end
+
+    test "replace_params for @<operator>:<selector> format" do
+      assert %{"foo" => "bar"} =
+               Parser.replace_params(%{"foo" => "@path:foo"}, %{"path" => %{"foo" => "bar"}})
+
+      assert %{"foo" => "baz"} =
+               Parser.replace_params(%{"foo" => "@lenra:foo.bar"}, %{
+                 "lenra" => %{"foo" => %{"bar" => "baz"}}
+               })
+    end
   end
 end
