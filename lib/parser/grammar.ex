@@ -77,10 +77,10 @@ defmodule QueryParser.Parser.Grammar do
       '$lt' /
       '$eq' /
       '$ne' /
+      '$type' /
       '$exists'"
     # '$size'
 
-    #  '$type' /
     # '$bitsAllClear' /
     # '$bitsAllSet' /
     # '$bitsAnyClear' /
