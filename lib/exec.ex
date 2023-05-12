@@ -74,18 +74,22 @@ defmodule QueryParser.Exec do
        )
        when is_list(elem_value) do
     Enum.all?(operators, fn operator ->
-      case Map.get(operator, "operator") do
-        # $all need specific action
-        all_operator when all_operator == "$all" ->
-          exec?(operator, elem, ctx)
+      if Map.get(operator, "operator") == "$size" do
+        exec?(operator, elem, ctx)
+      else
+        case Map.get(operator, "operator") do
+          # $all need specific action
+          all_operator when all_operator == "$all" ->
+            exec?(operator, elem, ctx)
 
-        # not operator need cond match all the list add value in @all_operator
-        op when op in @all_operator ->
-          exec_all(elem, elem_value, ctx, operator)
+          # not operator need cond match all the list add value in @all_operator
+          op when op in @all_operator ->
+            exec_all(elem, elem_value, ctx, operator)
 
-        # other operator need cond matchh any of the list
-        _common ->
-          exec_any(elem, elem_value, ctx, operator)
+          # other operator need cond matchh any of the list
+          _common ->
+            exec_any(elem, elem_value, ctx, operator)
+        end
       end
     end)
   end
