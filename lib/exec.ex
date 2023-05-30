@@ -4,6 +4,8 @@ defmodule QueryParser.Exec do
     It takes care of executing the AST query into the data passed.
   """
 
+  require Logger
+
   alias LenraCommon.JsonHelper
 
   @all_operator ["$nin", "$not", "$nor"]
@@ -86,18 +88,22 @@ defmodule QueryParser.Exec do
        )
        when is_list(elem_value) do
     Enum.all?(operators, fn operator ->
-      case Map.get(operator, "operator") do
-        # $all need specific action
-        all_operator when all_operator == "$all" ->
-          exec?(operator, elem, ctx)
+      if Map.get(operator, "operator") == "$size" do
+        exec?(operator, elem, ctx)
+      else
+        case Map.get(operator, "operator") do
+          # $all need specific action
+          all_operator when all_operator == "$all" ->
+            exec?(operator, elem, ctx)
 
-        # not operator need cond match all the list add value in @all_operator
-        op when op in @all_operator ->
-          exec_all(elem, elem_value, ctx, operator)
+          # not operator need cond match all the list add value in @all_operator
+          op when op in @all_operator ->
+            exec_all(elem, elem_value, ctx, operator)
 
-        # other operator need cond matchh any of the list
-        _common ->
-          exec_any(elem, elem_value, ctx, operator)
+          # other operator need cond matchh any of the list
+          _common ->
+            exec_any(elem, elem_value, ctx, operator)
+        end
       end
     end)
   end
@@ -128,33 +134,7 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
-
-    case operator do
-      "$eq" ->
-        elem_value == exec_value(value, elem, ctx)
-
-      "$ne" ->
-        elem_value != exec_value(value, elem, ctx)
-
-      "$lt" ->
-        elem_value < exec_value(value, elem, ctx)
-
-      "$lte" ->
-        elem_value <= exec_value(value, elem, ctx)
-
-      "$gt" ->
-        elem_value > exec_value(value, elem, ctx)
-
-      "$gte" ->
-        elem_value >= exec_value(value, elem, ctx)
-
-      "$exists" ->
-        nil? = nil == elem_value
-        exec_value(value, elem, ctx) != nil?
-
-      "$type" ->
-        is_bson_type(elem_value, exec_value(value, elem, ctx))
-    end
+    exec_value_operator?(operator, elem_value, exec_value(value, elem, ctx))
   end
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
@@ -203,5 +183,55 @@ defmodule QueryParser.Exec do
         exec?(operator, elem, new_ctx)
       end
     )
+  end
+
+  defp exec_value_operator?("$eq", elem_value, value) do
+    elem_value == value
+  end
+
+  defp exec_value_operator?("$ne", elem_value, value) do
+    elem_value != value
+  end
+
+  defp exec_value_operator?("$lt", elem_value, value) do
+    elem_value < value
+  end
+
+  defp exec_value_operator?("$lte", elem_value, value) do
+    elem_value <= value
+  end
+
+  defp exec_value_operator?("$gt", elem_value, value) do
+    elem_value > value
+  end
+
+  defp exec_value_operator?("$gte", elem_value, value) do
+    elem_value >= value
+  end
+
+  defp exec_value_operator?("$exists", elem_value, value) when is_nil(elem_value) do
+    # Since elem_value is nil, we want to return the opposite of $exists value
+    !value
+  end
+
+  defp exec_value_operator?("$exists", _elem_value, value) do
+    value
+  end
+
+  defp exec_value_operator?("$size", elem_value, value) when is_list(elem_value) do
+    elem_value |> length() == value
+  end
+
+  defp exec_value_operator?("$size", _elem_value, _value) do
+    false
+  end
+
+  defp exec_value_operator?("$type", elem_value, value) do
+    is_bson_type(elem_value, value)
+  end
+
+  defp exec_value_operator?(operator, _elem_value, _value) do
+    Logger.error("operator does not exist #{operator}")
+    false
   end
 end
