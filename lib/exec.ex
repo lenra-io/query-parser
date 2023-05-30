@@ -134,7 +134,7 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
-    exec_value_operator?(operator, value, elem_value, elem, ctx)
+    exec_value_operator?(operator, elem_value, exec_value(value, elem, ctx))
   end
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
@@ -185,48 +185,52 @@ defmodule QueryParser.Exec do
     )
   end
 
-  defp exec_value_operator?("$eq", value, elem_value, elem, ctx) do
-    elem_value == exec_value(value, elem, ctx)
+  defp exec_value_operator?("$eq", elem_value, value) do
+    elem_value == value
   end
 
-  defp exec_value_operator?("$ne", value, elem_value, elem, ctx) do
-    elem_value != exec_value(value, elem, ctx)
+  defp exec_value_operator?("$ne", elem_value, value) do
+    elem_value != value
   end
 
-  defp exec_value_operator?("$lt", value, elem_value, elem, ctx) do
-    elem_value < exec_value(value, elem, ctx)
+  defp exec_value_operator?("$lt", elem_value, value) do
+    elem_value < value
   end
 
-  defp exec_value_operator?("$lte", value, elem_value, elem, ctx) do
-    elem_value <= exec_value(value, elem, ctx)
+  defp exec_value_operator?("$lte", elem_value, value) do
+    elem_value <= value
   end
 
-  defp exec_value_operator?("$gt", value, elem_value, elem, ctx) do
-    elem_value > exec_value(value, elem, ctx)
+  defp exec_value_operator?("$gt", elem_value, value) do
+    elem_value > value
   end
 
-  defp exec_value_operator?("$gte", value, elem_value, elem, ctx) do
-    elem_value >= exec_value(value, elem, ctx)
+  defp exec_value_operator?("$gte", elem_value, value) do
+    elem_value >= value
   end
 
-  defp exec_value_operator?("$exists", value, elem_value, elem, ctx) do
-    nil? = nil == elem_value
-    exec_value(value, elem, ctx) != nil?
+  defp exec_value_operator?("$exists", elem_value, value) when is_nil(elem_value) do
+    # Since elem_value is nil, we want to return the opposite of $exists value
+    !value
   end
 
-  defp exec_value_operator?("$size", value, elem_value, elem, ctx) when is_list(elem_value) do
-      elem_value |> length() == exec_value(value, elem, ctx)
-end
-  
-defp exec_value_operator?("$size", value, elem_value, elem, ctx) do
-      false
-end
-
-  defp exec_value_operator?("$type", value, elem_value, elem, ctx) do
-    is_bson_type(elem_value, exec_value(value, elem, ctx))
+  defp exec_value_operator?("$exists", _elem_value, value) do
+    value
   end
 
-  defp exec_value_operator?(operator, _value, _elem_value, _elem, _ctx) do
+  defp exec_value_operator?("$size", elem_value, value) when is_list(elem_value) do
+    elem_value |> length() == value
+  end
+
+  defp exec_value_operator?("$size", _elem_value, _value) do
+    false
+  end
+
+  defp exec_value_operator?("$type", elem_value, value) do
+    is_bson_type(elem_value, value)
+  end
+
+  defp exec_value_operator?(operator, _elem_value, _value) do
     Logger.error("operator does not exist #{operator}")
     false
   end
