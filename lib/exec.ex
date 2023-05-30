@@ -132,40 +132,7 @@ defmodule QueryParser.Exec do
          ctx
        ) do
     {elem_value, ctx} = Map.pop(ctx, "elem_value")
-
-    case operator do
-      "$eq" ->
-        elem_value == exec_value(value, elem, ctx)
-
-      "$ne" ->
-        elem_value != exec_value(value, elem, ctx)
-
-      "$lt" ->
-        elem_value < exec_value(value, elem, ctx)
-
-      "$lte" ->
-        elem_value <= exec_value(value, elem, ctx)
-
-      "$gt" ->
-        elem_value > exec_value(value, elem, ctx)
-
-      "$gte" ->
-        elem_value >= exec_value(value, elem, ctx)
-
-      "$exists" ->
-        nil? = nil == elem_value
-        exec_value(value, elem, ctx) != nil?
-
-      "$size" ->
-        if is_list(elem_value) do
-          elem_value |> length() == exec_value(value, elem, ctx)
-        else
-          false
-        end
-
-      "$type" ->
-        is_bson_type(elem_value, exec_value(value, elem, ctx))
-    end
+    exec_value_operator?(operator, value, elem_value, elem, ctx)
   end
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
@@ -214,5 +181,51 @@ defmodule QueryParser.Exec do
         exec?(operator, elem, new_ctx)
       end
     )
+  end
+
+  defp exec_value_operator?("$eq", value, elem_value, elem, ctx) do
+    elem_value == exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$ne", value, elem_value, elem, ctx) do
+    elem_value != exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$lt", value, elem_value, elem, ctx) do
+    elem_value < exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$lte", value, elem_value, elem, ctx) do
+    elem_value <= exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$gt", value, elem_value, elem, ctx) do
+    elem_value > exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$gte", value, elem_value, elem, ctx) do
+    elem_value >= exec_value(value, elem, ctx)
+  end
+
+  defp exec_value_operator?("$exists", value, elem_value, elem, ctx) do
+    nil? = nil == elem_value
+    exec_value(value, elem, ctx) != nil?
+  end
+
+  defp exec_value_operator?("$size", value, elem_value, elem, ctx) do
+    if is_list(elem_value) do
+      elem_value |> length() == exec_value(value, elem, ctx)
+    else
+      false
+    end
+  end
+
+  defp exec_value_operator?("$type", value, elem_value, elem, ctx) do
+    is_bson_type(elem_value, exec_value(value, elem, ctx))
+  end
+
+  defp exec_value_operator?(operator, _value, _elem_value, _elem, _ctx) do
+    Logger.error("operator does not exist #{operator}")
+    false
   end
 end
