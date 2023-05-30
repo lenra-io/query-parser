@@ -4,6 +4,8 @@ defmodule QueryParser.Exec do
     It takes care of executing the AST query into the data passed.
   """
 
+  require Logger
+
   alias LenraCommon.JsonHelper
 
   @all_operator ["$nin", "$not", "$nor"]
