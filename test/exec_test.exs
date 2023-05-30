@@ -384,7 +384,7 @@ defmodule QueryParser.ExecTest do
     end
 
     test "size operator can only take array" do
-      assert_raise ArgumentError, fn -> parse_and_exec(data(), %{"_id" => %{"$size" => 5}}) end
+      assert [] = parse_and_exec(data(), %{"_id" => %{"$size" => 5}})
       assert [] = parse_and_exec(data(), %{"ids" => %{"$size" => 10}})
     end
   end

@@ -155,10 +155,14 @@ defmodule QueryParser.Exec do
       "$exists" ->
         nil? = nil == elem_value
         exec_value(value, elem, ctx) != nil?
-        
+
       "$size" ->
-        elem_value |> length() == exec_value(value, elem, ctx)
-        
+        if is_list(elem_value) do
+          elem_value |> length() == exec_value(value, elem, ctx)
+        else
+          false
+        end
+
       "$type" ->
         is_bson_type(elem_value, exec_value(value, elem, ctx))
     end
