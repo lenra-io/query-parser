@@ -214,13 +214,13 @@ defmodule QueryParser.Exec do
     exec_value(value, elem, ctx) != nil?
   end
 
-  defp exec_value_operator?("$size", value, elem_value, elem, ctx) do
-    if is_list(elem_value) do
+  defp exec_value_operator?("$size", value, elem_value, elem, ctx) when is_list(elem_value) do
       elem_value |> length() == exec_value(value, elem, ctx)
-    else
+end
+  
+defp exec_value_operator?("$size", value, elem_value, elem, ctx) do
       false
-    end
-  end
+end
 
   defp exec_value_operator?("$type", value, elem_value, elem, ctx) do
     is_bson_type(elem_value, exec_value(value, elem, ctx))
