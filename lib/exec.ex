@@ -6,8 +6,6 @@ defmodule QueryParser.Exec do
 
   require Logger
 
-  alias LenraCommon.JsonHelper
-
   @all_operator ["$nin", "$not", "$nor"]
 
   defp is_bson_type(value, type) do
@@ -38,10 +36,8 @@ defmodule QueryParser.Exec do
     exec?(ast, elem, %{})
   end
 
-  @doc """
-  exec? will take a bool expression and execute it on the element.
-  It returns true if the elem matches the expression.
-  """
+  # exec? will take a bool expression and execute it on the element.
+  # It returns true if the elem matches the expression.
   # Case of a "expression" with a list of clauses. All clauses must match.
   defp exec?(%{"pos" => "expression", "clauses" => clauses}, elem, ctx) do
     Enum.all?(clauses, &exec?(&1, elem, ctx))
@@ -139,7 +135,7 @@ defmodule QueryParser.Exec do
 
   defp exec?(%{"pos" => "leaf-clause", "key" => key, "value" => value}, elem, ctx) do
     key_list = String.split(key, ".")
-    elem_value = JsonHelper.get_in_json(elem, key_list)
+    elem_value = get_in_json(elem, key_list)
 
     # If the next element is a leaf-value, this is a "short equal"
     if Map.get(value, "pos") == "leaf-value" do
@@ -233,5 +229,33 @@ defmodule QueryParser.Exec do
   defp exec_value_operator?(operator, _elem_value, _value) do
     Logger.error("operator does not exist #{operator}")
     false
+  end
+
+  ######################
+  ## Helper functions ##
+  ######################
+
+  defp get_in_json(nil, [_]), do: {:error, :nil_json}
+  defp get_in_json(nil, [_ | t]), do: get_in_json(nil, t)
+
+  defp get_in_json(data, [h]) when is_bitstring(h) and is_list(data),
+    do: get_in_list(data, h)
+
+  defp get_in_json(data, [h]) when is_bitstring(h), do: data[h]
+
+  defp get_in_json(data, [h | t]) when is_bitstring(h) and is_list(data),
+    do: get_in_json(get_in_list(data, h), t)
+
+  defp get_in_json(data, [h | t]) when is_bitstring(h),
+    do: get_in_json(data[h], t)
+
+  defp get_in_list(data, h) do
+    case Integer.parse(h) do
+      :error ->
+        {:error, :invalid_index}
+
+      {number, _} ->
+        Enum.at(data, number)
+    end
   end
 end

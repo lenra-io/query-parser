@@ -1,8 +1,6 @@
 defmodule QueryParser.ExecTest do
   use ExUnit.Case
 
-  alias LenraCommon.Errors.BusinessError
-
   def parse_and_exec(data, query, params \\ %{}) do
     ast =
       query

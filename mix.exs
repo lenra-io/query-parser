@@ -38,8 +38,7 @@ defmodule QueryParser.MixProject do
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
-      {:poison, "~> 5.0", override: true},
-      {:lenra_common, "~> 2.8"}
+      {:poison, "~> 5.0", override: true}
     ]
   end
 end
