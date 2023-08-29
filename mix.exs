@@ -41,7 +41,8 @@ defmodule QueryParser.MixProject do
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
-      {:poison, "~> 4.0", only: [:test]}
+      {:poison, "~> 4.0", only: [:test]},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
