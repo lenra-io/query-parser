@@ -2,7 +2,6 @@ defmodule QueryParser.Parser do
   @moduledoc """
   This Parser module will use the grammar to parse the query string into an AST.
   """
-  alias QueryParser.Errors.BusinessError
   alias QueryParser.Parser.Grammar
 
   # Sadly, the warning in the grammar file do propagate with these function.
@@ -13,14 +12,14 @@ defmodule QueryParser.Parser do
   @dialyzer {:nowarn_function, parse!: 2}
   @dialyzer {:nowarn_function, replace: 2}
 
-  @spec parse(String.t(), map()) :: {:ok, any()} | {:error, LenraCommon.Errors.BusinessError.t()}
+  @spec parse(String.t(), map()) :: {:ok, any()} | {:error, :invalid_query}
   def parse(query_str, params \\ %{}) do
     case Grammar.parse(query_str) do
       {:error, _term} ->
-        BusinessError.invalid_query_tuple()
+        {:error, :invalid_query}
 
       :mismatch ->
-        BusinessError.invalid_query_tuple()
+        {:error, :invalid_query}
 
       {:ok, res} ->
         {:ok, replace(res, params)}
