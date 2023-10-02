@@ -898,7 +898,7 @@ defmodule QueryParser.ParserTest do
     end
 
     test "accepts $text queries with $search" do
-      not_supported(%{"$text" => %{"$search": "coffee"}})
+      supported(%{"$text" => %{"$search": "coffee"}})
     end
 
     test "accepts $text queries with $search & $language" do
