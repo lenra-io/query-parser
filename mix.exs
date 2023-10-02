@@ -37,7 +37,7 @@ defmodule QueryParser.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7.1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:execjs, "~> 2.0", only: [:test], runtime: false},
       {:neotomex, "~> 0.1.7"},
